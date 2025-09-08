@@ -1,0 +1,3 @@
+npm run dev: to run REACT
+python app.py: to run Flask
+npm install react-router-dom: This installs a router for React, so app can have mutile URLs without needing to reloaded
