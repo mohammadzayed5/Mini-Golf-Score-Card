@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
+import {apiFetch} from '../lib/api' 
 
 export default function Home() {
     //useNavigate will allow me to programmatically move to another URL
@@ -15,7 +16,7 @@ export default function Home() {
         try{
             //Calls Flask API to create new game
             //Due to Vite proxy, /api/games will go to http://127.0.0.1:5001/api/games
-            const res = await fetch(`/api/games`, {
+            const res = await apiFetch(`/api/games`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ name: 'New Round', holes: 18}),

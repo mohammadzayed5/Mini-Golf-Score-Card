@@ -1,6 +1,7 @@
 {
 	"appId": "com.MohammadZayed.minigolf",
-	"appName": "minigolf",
+	"appName": "Mini Golf Score Card",
 	"webDir": "dist",
+	"bundledWebRuntime": false,
 	"packageClassList": []
 }

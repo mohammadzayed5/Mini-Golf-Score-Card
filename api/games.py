@@ -28,7 +28,7 @@ def _parse_players(value) -> list[str]:
 @bp.post("/games")
 def post_game():
     #Create a game.
-    data = request.get_json() or {}
+    data = request.get_json(silent=True) or {}
     name = str(data.get("name", "")).strip()
     holes = data.get("holes", None)
 

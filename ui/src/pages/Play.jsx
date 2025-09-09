@@ -1,5 +1,7 @@
 import { useEffect, useState} from 'react'
 import { useParams, useNavigate} from 'react-router-dom'
+import {apiFetch} from '../lib/api' 
+
 
 export default function Play() {
     //Read ":id" param from URL (ex: /play/1 -> id = 1")
@@ -19,7 +21,7 @@ export default function Play() {
             setError('') //clear Errors before trying
             try{
                 //Get api/games/:id to fetch the game details from Flask
-                const res = await fetch(`/api/games/${id}`)
+                const res = await apiFetch(`/api/games/${id}`)
 
                 if(!res.ok) throw new Error(`HTTP ${res.status}`)
 
