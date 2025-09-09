@@ -24,10 +24,18 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+.home {
+  min-height: 100vh;              /* take full height */
+  display: flex;                   /* flex layout */
+  flex-direction: column;          /* stack title + button */
+  justify-content: center;         /* vertical center */
+  align-items: center;             /* horizontal center */
+  gap: 16px;                       /* spacing between items */
+  text-align: center;              /* center text */
+  padding: 24px;                   /* breathing room on small screens */
 }
 
 h1 {
