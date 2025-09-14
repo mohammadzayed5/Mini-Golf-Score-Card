@@ -1,3 +1,18 @@
 npm run dev: to run REACT
 python app.py: to run Flask
 npm install react-router-dom: This installs a router for React, so app can have mutile URLs without needing to reloaded
+
+
+To run API: 
+cd into api, 
+source .venv/bin/activate
+python app.py
+
+To run UI on everything: 
+npm i -D vite-plugin-svgr //download svgr images
+
+VITE_API_BASE_URL=http://192.168.0.80:5001 npm run build
+
+To open Xcode and build app on Iphone:
+npx cap copy ios                                        
+npx cap open ios     

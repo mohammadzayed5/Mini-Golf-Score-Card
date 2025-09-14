@@ -11,6 +11,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /*Mini - golf mint theme*/
+  --mint: #7cf7c1;
+  --mint-soft: #5fe7b1;
+  --bg-deep: #0f1b19;
+
 }
 
 a {
@@ -74,3 +80,219 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+/* ==== BOTTOM Navigation BAR LAYOUT (add to end of ui/src/index.css) ==== */
+
+/* app-shell creates a full-height column layout: content scrolls, bar is fixed at bottom */
+.app-shell {
+  min-height: 100dvh;               /* mobile viewport units; more reliable on iOS */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Give the scrolling content some bottom padding so it never hides behind the navigation bar.
+   We use a CSS var for the bar's height + the iPhone safe area (home indicator). */
+.content {
+  padding-bottom: calc(var(--navigationbar-h, 64px) + env(safe-area-inset-bottom));
+}
+
+/* Fixed bottom navigation */
+.navigationbar {
+  --navigationbar-h: 64px;                               /* base height of the bar */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: calc(var(--navigationbar-h) + env(safe-area-inset-bottom));
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));    /* avoids overlapping iPhone home indicator */
+
+  /*dark/minty colors*/
+  background: rgba(8, 15, 14, 0.92);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(124, 247, 193, 0.16);
+  box-shadow: 0 -18px 36px rgba(0,0,0,.38);
+
+  /* new: centered, rounded “pill” */
+  width: min(900px, 100% - 16px);
+  margin: 0 auto;
+  border-radius: 20px 20px 14px 14px;
+
+  display: grid;
+  grid-auto-flow: column;       /* 3 equal-width columns for 3 navigations */
+  grid-auto-columns: 1fr;
+  align-items: center;
+  z-index: 50;                  /* keep it above page content */
+}
+
+/* Each navigation: center icon + label */
+.navigationbar .navigation {
+  height: var(--navigationbar-h);
+  display: grid;
+  /* force two rows: icon then label, same for active/inactive */
+  grid-template-rows: 22px auto;
+  align-content: center;
+  justify-items: center;
+  gap: 4px;
+  text-decoration: none;
+  color: #c9d6f2;
+  font-size: 12px;
+  position: relative;      /* needed for the absolute ::after indicator */
+  font-weight: 600;        /* stable weight to prevent reflow on active */
+}
+
+/* Icon size */
+.navigationbar .navigation .emoji {
+  font-size: 20px;
+  display: block;
+  height: 22px;            /* matches grid row above */
+  line-height: 22px;       /* centers emoji in its row */
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,.2));
+}
+
+.navigationbar .navigation .label { line-height: 1; }
+
+
+/* Active navigation highlight:
+   NavLink adds aria-current="page" on the active route, so we can style it without JS. */
+   .navigationbar .navigation.active::after,
+   .navigationbar .navigation[aria-current="page"]::after {
+     content: "";
+     position: absolute;
+     left: 50%;
+     bottom: 6px;                           /* sits above the bar’s bottom padding */
+     transform: translateX(-50%);
+     width: 36px;
+     height: 4px;
+     background: linear-gradient(180deg, var(--mint), var(--mint-soft));
+     border-radius: 9999px;
+     pointer-events: none;                   /* purely decorative */
+   }
+
+/* Optional helpers for page layout */
+.page { max-width: 900px; margin: 20px auto; padding: 0 16px; }
+.title { margin: 12px 0 10px; }
+
+/* IMPORTANT: If your existing CSS has:
+     body { display: flex; place-items: center; ... }
+   remove those two properties OR override like this: */
+body { display: block; }
+
+.navigationbar .navigation .icon {
+  width: 22px;
+  height: 22px;
+  color: currentColor;              /* for SVGs that use currentColor */
+  display: block;
+}
+.navigationbar .navigation .icon * {
+  fill: currentColor !important;    /* forces SVG tint if needed */
+  stroke: currentColor !important;
+}
+/* === Players page styles === */
+
+.players .title {
+  text-align: center;
+  margin: 8px 0 12px;
+}
+
+.players-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+/* Player card */
+.player-card {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 16px;
+
+  background: #212937;                 /* same vibe as mockup */
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  padding: 16px;
+}
+
+/* Circular initials avatar */
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: #2bc582;                 /* mint */
+  color: #0c1a1a;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-size: 22px;
+}
+
+/* Name + wins */
+.player-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.player-name {
+  color: #f5f7fa;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.player-stats {
+  color: #c9d6f2;
+  font-size: 14px;
+}
+
+/* Big Add button */
+.add-player {
+  margin-top: 22px;
+  width: 100%;
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: #6ee7b7;                 /* accent mint */
+  color: #0a1e18;
+  font-weight: 800;
+  font-size: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.add-player .plus {
+  font-size: 22px;
+  line-height: 1;
+}
+
+
+.home{
+  min-height:100dvh; padding:64px 20px 120px;
+  display:grid; justify-items:center; align-content:start; gap:24px; text-align:center;
+  background: radial-gradient(80% 40% at 50% 10%, rgba(60,120,90,.28), transparent 60%), var(--bg-deep);
+}
+.home-title{
+  margin:8px 0 4px; font-weight:800; letter-spacing:.4px; line-height:1.05;
+  color:var(--mint); font-size:clamp(28px,7vw,48px); display:grid;
+}
+.home-title span+span{ margin-top:2px; }
+.hero-ball{
+  width:clamp(120px,35vw,170px); height:auto; border-radius:50%;
+  filter:drop-shadow(0 18px 38px rgba(0,0,0,.45)); box-shadow:0 0 0 10px rgba(124,247,193,.05);
+}
+.cta.start-round{
+  width:min(620px,92%); height:56px; border-radius:9999px;
+  font-size:clamp(16px,3.8vw,22px); font-weight:800; color:#073d2b;
+  background:linear-gradient(180deg,var(--mint),var(--mint-soft));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 10px 28px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  transition:transform .06s, filter .2s, box-shadow .2s;
+}
+.cta.start-round:hover{ filter:brightness(1.03); }
+.cta.start-round:active{ transform:translateY(1px); }
+.error{ color:#ff6b6b; margin-top:10px; }

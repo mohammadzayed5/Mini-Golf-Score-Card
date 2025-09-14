@@ -1,17 +1,24 @@
 //Let me map URL paths to REACT
 import { Routes, Route } from 'react-router-dom'
-//These next 2 will be pages that I create
+import TabLayout from './layouts/TabLayout.jsx'
+//Different Pages
 import Home from './pages/Home.jsx'
 import Play from './pages/Play.jsx'
-
-
+import Players from './pages/Players.jsx'
+import History from './pages/History.jsx'
 
 export default function App() {
   return (
     <Routes>
+        {/*All routes inside TabLayout will show the bottom Navigation Bar */}
+      <Route element={<TabLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/play/:id" element={<Play />} />
+        <Route path="/players" element={<Players />} />
+        <Route path="/history" element={<History />} />
+      </Route>
+      {/*Play is outside layout so the navigation bar doesn't overlay scoreboard.
+        If I move this above inside of TabLayout then the bar will be visible on Play too */}
+      <Route path="/play/:id" element={<Play />} />
     </Routes>
-  )
-
+  );
 }
