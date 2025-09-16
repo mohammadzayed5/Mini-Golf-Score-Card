@@ -6,6 +6,9 @@ import Home from './pages/Home.jsx'
 import Play from './pages/Play.jsx'
 import Players from './pages/Players.jsx'
 import History from './pages/History.jsx'
+import Courses from './pages/Courses.jsx'
+import PlayerSelect from './pages/playerSelect.jsx'
+
 
 export default function App() {
   return (
@@ -15,6 +18,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/players" element={<Players />} />
         <Route path="/history" element={<History />} />
+        <Route path="/courses" element={<Courses />} />
+        <Route path="/playerSelect" element={<PlayerSelect />} />
       </Route>
       {/*Play is outside layout so the navigation bar doesn't overlay scoreboard.
         If I move this above inside of TabLayout then the bar will be visible on Play too */}

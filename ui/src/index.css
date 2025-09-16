@@ -149,8 +149,12 @@ button:focus-visible {
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.2));
 }
 
-.navigationbar .navigation .label { line-height: 1; }
+.navigationbar .navigation .label {
+ line-height: 1; 
+ min-height: 14px
 
+
+}
 
 /* Active navigation highlight:
    NavLink adds aria-current="page" on the active route, so we can style it without JS. */
@@ -296,3 +300,71 @@ body { display: block; }
 .cta.start-round:hover{ filter:brightness(1.03); }
 .cta.start-round:active{ transform:translateY(1px); }
 .error{ color:#ff6b6b; margin-top:10px; }
+
+/* Courses page */
+.courses .title { text-align: center; }
+
+.course-grid {
+  list-style: none; margin: 16px 0 0; padding: 0;
+  display: grid; gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.course-card {
+  background: rgba(18,31,29,0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);
+
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.course-card .course-name {
+  color: #eaf7f1;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+
+.course-card .course-meta {
+  color: #c9d6f2;
+  font-size: 13px;
+}
+
+.course-card .choose {
+  margin-top: 8px;
+  height: 40px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--mint), var(--mint-soft));
+  color: #073d2b;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.course-card.custom {
+  outline: 1px dashed rgba(124, 247, 193, 0.25);
+  background: rgba(18,31,29,0.75);
+}
+
+/* Keep weight stable; only color changes on active */
+.navigationbar .navigation[aria-current="page"] {
+  color: var(--mint);
+}
+/* Give the players page some bottom room so content isn't hidden */
+.page.players {
+  /* space for the floating Start button + bottom nav + safe area */
+  padding-bottom: calc(140px + var(--navigationbar-h, 64px) + env(safe-area-inset-bottom));
+}
+
+/* Pin ONLY the Start Game button (on Players page) to the bottom center */
+.players .cta.start-round {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--navigationbar-h, 64px) + 12px + env(safe-area-inset-bottom));
+  width: min(620px, 92%);
+  z-index: 60;       /* above content, below dialogs */
+}
