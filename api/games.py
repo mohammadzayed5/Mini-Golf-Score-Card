@@ -1,6 +1,10 @@
 #This file creates/fetches games here using database (store.py)
+#Data storage is in store.py
+
+
 from flask import Blueprint, request, jsonify
-from store import create_game, list_games, get_game, update_game 
+from store import create_game, list_games, get_game, update_game, get_player, set_score
+
 
 bp = Blueprint("games", __name__)
 
@@ -25,6 +29,29 @@ def _parse_players(value) -> list[str]:
             cleaned.append(name)
     return cleaned
 
+
+def _names_from_ids(ids) -> list[str]:
+    #Convert a list of player ids (as ints or string) insto a list of player NAMES
+    #Looks up data from players.PLAYERS
+    #Build a quick lookup dict id->name from current players list.
+    names, seen = [], set()
+    for v in (ids or []):
+        try:
+            pid = int(v)
+        except (TypeError, ValueError):
+            #skip values that aren't valid input
+            continue
+        #Map ids -> names, skipping unknown ids.
+        p = get_player(pid)
+        if p:
+            n = p["name"]
+            if n not in seen:
+                seen.add(n)
+                names.append(n)
+    return names
+
+
+
 @bp.post("/games")
 def post_game():
     #Create a game.
@@ -33,10 +60,14 @@ def post_game():
     holes = data.get("holes", None)
 
     #Players can come either as list or as a CSV string
-    players = _parse_players(
-        data.get("players", data.get("players_csv"))
-    )
+    #Option A: explicit names (list or CSV string)
+    players = _parse_players(data.get("players", data.get("players_csv")))
 
+    #Option B: ids-> names (only if no names provided)
+    if not players and "playerIds" in data:
+        players = _names_from_ids(data.get("playerIds"))
+    
+    #Validate inputs
     errors = {}
     if not name:
         errors["name"] = "Game name is required."
@@ -50,6 +81,8 @@ def post_game():
     if errors:
         return jsonify({"errors": errors}), 400
 
+    #Delegate to store.py to create and return the game record
+    #store.create_game sets up "scores" dict keyed by player names.
     game = create_game(name=name, holes=holes, players=players)
     return jsonify(game), 201
 
@@ -90,3 +123,18 @@ def patch_game(game_id: int):
     if not game:
         return jsonify({"error": "Not found"}), 404
     return jsonify(game)
+
+@bp.patch("/games/<int:game_id>/score")
+def patch_score(game_id: int):
+    data = request.get_json(silent=True) or {}
+    player = data.get("player")
+    hole = data.get("hole")            # 1-based
+    score = data.get("score", None)    # allow null to clear
+    try:
+        hi = int(hole) - 1
+    except (TypeError, ValueError):
+        return jsonify({"errors": {"hole": "Hole must be an integer 1..N"}}), 400
+    updated = set_score(game_id, player, hi, score)
+    if not updated:
+        return jsonify({"error": "Invalid game/player/hole"}), 400
+    return jsonify(updated)

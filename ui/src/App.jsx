@@ -8,7 +8,7 @@ import Players from './pages/Players.jsx'
 import History from './pages/History.jsx'
 import Courses from './pages/Courses.jsx'
 import PlayerSelect from './pages/playerSelect.jsx'
-
+import Results from './pages/Results.jsx'
 
 export default function App() {
   return (
@@ -24,6 +24,7 @@ export default function App() {
       {/*Play is outside layout so the navigation bar doesn't overlay scoreboard.
         If I move this above inside of TabLayout then the bar will be visible on Play too */}
       <Route path="/play/:id" element={<Play />} />
+      <Route path="/results/:id" element={<Results />} />
     </Routes>
   );
 }

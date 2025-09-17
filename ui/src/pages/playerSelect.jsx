@@ -14,6 +14,7 @@ export default function PlayerSelect() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
   const [creating, setCreating] = useState(false);
+  const [selected, setSelected] = useState(new Set());
   const navigate = useNavigate();
   
 
@@ -26,7 +27,22 @@ export default function PlayerSelect() {
           .map(w => w[0]?.toUpperCase() || "")
           .join(""); 
 
-      
+  //toggle selection
+  const toggle = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
+  const onCardKey = (e, id) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      toggle(id);
+    }
+  };
+
     //Load
   useEffect(() => {
       let cancelled = false; //this avoids setting state after unmount
@@ -35,7 +51,7 @@ export default function PlayerSelect() {
           setErr("");
           setLoading(true);
           try {
-              const res = await apiFetch("/api/playerSelect"); //GET Players
+              const res = await apiFetch("/api/players"); //GET Players
               if(!res.ok) throw new Error(`HTTP ${res.status}`);
               const data = await res.json();
               if(!cancelled) setPlayers(data); //update state
@@ -59,7 +75,7 @@ export default function PlayerSelect() {
       if(!name || !name.trim()) return;
       try {
           // Access API
-          const res = await apiFetch("/api/playerSelect", {
+          const res = await apiFetch("/api/players", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name.trim() }),
@@ -80,16 +96,25 @@ export default function PlayerSelect() {
       };
     //Click handler for "Start Game"
     const startGame = async () => {
-      setCreating(true) //disable button + output "Creating..."
       setErr('') // clear any previous error
+      //At least one selected player to start
+      if(selected.size === 0){
+        setErr("Select at least one player to start.");
+        return;
+      }
+      setCreating(true);
       try{
           //Calls Flask API to create new game
           //Due to Vite proxy, /api/games will go to http://127.0.0.1:5001/api/games
           const res = await apiFetch(`/api/games`, {
               method: 'POST',
               headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({ name: 'New Round', holes: 18}),
-          })
+              body: JSON.stringify({
+                 name: 'New Round', 
+                 holes: 18,
+                playerIds: Array.from(selected),
+              }),
+          });
           //If Flask returns a non-2xx stats (ex: 500), throw an error
           if (!res.ok) throw new Error(`HTTP ${res.status}`)
           //Parse JSON body -> {id, name, holes, etc.}
@@ -103,22 +128,32 @@ export default function PlayerSelect() {
       } finally {
           setCreating(false) // re-enable button
       }
-      }
+      };
 
         
   return (
-      <main className="page players">
-        <h1 className="title">Players</h1>
+      <main className="page players-select">
+        <h1 className="title">Select Players</h1>
   
         {loading && <p>Loading…</p>}
         {err && <p className="error">{err}</p>}
   
         <ul className="players-list">
-          {players.map((p) => (
-            <li key={p.id} className="player-card">
-              {/* Avatar with initials */}
-              <div className="avatar" aria-hidden>
-                {initials(p.name)}
+          {players.map((p) => {
+            const isSelected = selected.has(p.id);
+            return (
+            <li key={p.id}
+             className={`player-card ${isSelected ? "selected" : ""}`}
+             onClick={() => toggle(p.id)}
+             onKeyDown={(e) => onCardKey(e, p.id)}
+             role="checkbox"
+             aria-checked={isSelected}
+             tabIndex={0}
+             >
+               {/* LEFT: selection box replaces initials circle */}
+              <div className={`selectbox ${isSelected ? "on" : ""}`} aria-hidden>
+                {/* optional check icon; keeps it text-free */}
+                {isSelected ? "✓" : ""}
               </div>
   
               {/* Name and wins */}
@@ -129,15 +164,14 @@ export default function PlayerSelect() {
   
               {/* (Optional) actions could go here later, like edit/delete */}
             </li>
-          ))}
+            );
+          })}
         </ul>
   
         {/* Big “Add Player” button */}
         <button className="add-player" onClick={addPlayer} aria-label="Add Player">
           <span className="plus" aria-hidden>＋</span> Add Player
         </button>
-
-
         <button
           className="cta start-round"
           onClick={startGame}

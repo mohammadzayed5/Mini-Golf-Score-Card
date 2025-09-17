@@ -2,8 +2,16 @@
 
 #When server dies, all data will disappear
 
+#GAMES
 GAMES = []
 NEXT_ID = 1
+#create_game, list_games, get_game, update_game
+
+
+#PLAYERS
+PLAYERS = [] # [{"id": int, "name": str, "wins": int}]
+NEXT_PLAYER_ID = 1
+
 
 
 def create_game(name: str, holes: int, players=None) -> dict:
@@ -69,3 +77,48 @@ def update_game(game_id: int, *, name=None, holes=None, players=None) -> dict | 
         game["scores"] = new_scores
 
     return game
+
+
+def create_player(name: str, *, wins: int = 0) -> dict:
+    #Create and return a player record.
+    global NEXT_PLAYER_ID
+    clean = " ".join(str(name).split())
+    if not clean:
+        raise ValueError("Name is required")
+    
+    player = {"id": NEXT_PLAYER_ID, "name": clean, "wins": int(wins)}
+    PLAYERS.append(player)
+    NEXT_PLAYER_ID += 1
+    return player
+
+def list_players() -> list[dict]:
+    #return all plxayers (newest last)
+    return PLAYERS
+
+def get_player(player_id: int) -> dict | None:
+    #Return a single player by id, or None.
+    try:
+        pid = int(player_id)
+    except (TypeError, ValueError):
+        return None
+    return next((p for p in PLAYERS if p["id"] == pid), None)
+
+def set_score(game_id: int, player: str, hole_index: int, score) -> dict | None:
+    """Set score (or None) for player at hole_index (0-based)."""
+    game = get_game(game_id)
+    if not game:
+        return None
+    name = str(player).strip()
+    if name not in game["scores"]:
+        return None
+    try:
+        h = int(hole_index)
+    except (TypeError, ValueError):
+        return None
+    if not (0 <= h < game["holes"]):
+        return None
+    val = None if score is None else int(score)
+    game["scores"][name][h] = val
+    return game
+
+

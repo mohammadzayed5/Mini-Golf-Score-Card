@@ -353,6 +353,8 @@ body { display: block; }
 .navigationbar .navigation[aria-current="page"] {
   color: var(--mint);
 }
+
+
 /* Give the players page some bottom room so content isn't hidden */
 .page.players {
   /* space for the floating Start button + bottom nav + safe area */
@@ -367,4 +369,369 @@ body { display: block; }
   bottom: calc(var(--navigationbar-h, 64px) + 12px + env(safe-area-inset-bottom));
   width: min(620px, 92%);
   z-index: 60;       /* above content, below dialogs */
+}
+
+/* Player card now uses a square select box instead of avatar */
+.player-card {
+  grid-template-columns: 56px 1fr;   /* checkbox + meta */
+}
+
+/* Select box style */
+.selectbox {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 20px;
+  color: #062e22;
+
+  /* default (unselected) look */
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.selectbox.on {
+  background: linear-gradient(180deg, var(--mint), var(--mint-soft));
+  border-color: rgba(124, 247, 193, 0.6);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.35);
+}
+
+/* Highlight whole row when selected */
+.player-card.selected {
+  border-color: rgba(124, 247, 193, 0.45);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+}
+
+/* Remove the old avatar circle if its CSS still exists */
+
+
+/* Give the players page some bottom room so content isn't hidden */
+.page.players-select {
+  /* space for the floating Start button + bottom nav + safe area */
+  padding-bottom: calc(140px + var(--navigationbar-h, 64px) + env(safe-area-inset-bottom));
+}
+
+/* Pin ONLY the Start Game button (on Players page) to the bottom center */
+.players-select .cta.start-round {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--navigationbar-h, 64px) + 12px + env(safe-area-inset-bottom));
+  width: min(620px, 92%);
+  z-index: 60;       /* above content, below dialogs */
+}
+/* === Play page === */
+.page.play { padding: 10px 16px 110px; }
+
+.holebar{
+  position: sticky; top: 0; z-index: 8;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin: -10px -16px 12px;                /* edge-to-edge */
+  background: rgba(18,31,29,0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.holebtn{
+  height: 36px; padding: 0 12px; border-radius: 10px;
+  background: #1b2733; color: #eaf7f1; border: 1px solid rgba(255,255,255,.15);
+  font-weight: 700;
+}
+.holebtn:disabled { opacity: .5; cursor: not-allowed; }
+.holebtn.right { justify-self: end; }
+.holecenter{ display:grid; grid-template-columns:auto auto; gap:6px; align-items: baseline; }
+.holelabel{ color:#c9d6f2; font-size:12px; }
+.holenumber{ color:#eaf7f1; font-weight:900; font-size:22px; }
+.coursename{
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 4px;
+  color: #c9d6f2; font-size: 12px; opacity:.9;
+}
+
+/* player cards */
+.play-list{ display:grid; gap: 14px; }
+.play-card{
+  display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px;
+  background: #212937; border:1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 12px 14px;
+}
+.play-info{ display:grid; gap:4px; }
+.play-name{ color:#eaf7f1; font-weight:800; letter-spacing:.2px; }
+.play-score{ color:#c9d6f2; font-size:14px; }
+
+.play-controls{ display:grid; grid-auto-flow:column; gap:10px; }
+.pill.round{
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  font-weight: 900;
+  font-size:18px;
+  color:#073d2b; background: linear-gradient(180deg, var(--mint), var(--mint-soft));
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 6px 16px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.30);
+}
+.pill.round:active{ transform: translateY(1px); }
+
+/* bottom cta */
+.leaderboard-cta-wrap{
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  width: min(900px, 100% - 16px);
+}
+.leaderboard-cta{
+  width: 100%; height: 48px; border-radius: 14px;
+  background: #0f1b19; color:#eaf7f1; font-weight:800;
+  border: 1px solid rgba(124,247,193,.25);
+}
+/* === Results page === */
+.results-header {                               /* header group */
+  display: grid;                                /* simple grid stack */
+  justify-items: center;                        /* center inner items horizontally */
+  gap: 6px;                                     /* small vertical spacing */
+  margin: 8px 0 14px;                           /* outside spacing */
+  text-align: center;                           /* center text */
+}
+.results-header .badge {                        /* small rounded tag with round name */
+  font-size: 12px;                              /* compact text */
+  padding: 4px 10px;                            /* pill padding */
+  border-radius: 9999px;                        /* full pill */
+  background: rgba(124, 247, 193, 0.12);        /* faint mint background */
+  border: 1px solid rgba(124, 247, 193, 0.35);  /* subtle mint border */
+  color: #bff5df;                               /* readable mint text */
+}
+.results-header .congrats {                     /* big headline */
+  margin: 2px 0 0;                              /* tighten spacing above subtitle */
+  font-size: clamp(20px, 6vw, 28px);            /* responsive size */
+  letter-spacing: .2px;                          /* tiny tracking for polish */
+}
+.results-header .sub {                           /* subtitle below headline */
+  margin: 0;                                     /* remove default margins */
+  color: #c9d6f2;                                /* soft bluish text */
+  font-size: 13px;                               /* compact */
+}
+
+/* leaderboard list */
+.score-grid {                                    /* wrapper for rows */
+  display: grid;                                 /* vertical stack */
+  gap: 10px;                                     /* spacing between rows */
+  margin-top: 10px;                              /* breathe below header */
+}
+.score-row {                                     /* each result row card */
+  display: grid;                                 /* grid layout for rank/name/total */
+  grid-template-columns: 48px 1fr auto;          /* circle rank | flexible name | right total */
+  align-items: center;                            /* vertical centering */
+  gap: 12px;                                      /* column gap */
+
+  background: #212937;                            /* matches your card style */
+  border: 1px solid rgba(255,255,255,0.08);       /* subtle border */
+  border-radius: 16px;                            /* rounded corners */
+  padding: 12px 14px;                             /* inner padding */
+}
+.score-row.first {                                /* highlight top rank */
+  border-color: rgba(124,247,193,0.45);           /* mint border */
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18);        /* gentle glow */
+}
+.score-row .rank {                                /* circular rank badge */
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;                           /* full circle */
+  display: grid;                                  /* easy center */
+  place-items: center;                            /* center text */
+  font-weight: 900;                               /* bold number */
+  background: linear-gradient(180deg, var(--mint), var(--mint-soft)); /* mint gradient */
+  color: #073d2b;                                 /* dark green text */
+  border: 1px solid rgba(255,255,255,.18);        /* inset border */
+}
+.score-row .who {                                 /* player name */
+  color: #f5f7fa;                                 /* bright white */
+  font-weight: 700;                               /* semi-bold */
+}
+.score-row .total {                               /* total strokes */
+  font-weight: 900;                               /* bold total */
+  color: #dfe7ff;                                 /* light blue-white */
+  font-size: 18px;                                /* readable size */
+}
+
+/* actions (Share / New Round / History) */
+.results-actions {
+  margin: 18px 0 20px;                            /* spacing around buttons */
+  display: grid;                                  /* vertical stack */
+  gap: 10px;                                      /* spacing between buttons */
+}
+.results .cta {                                   /* base button style for results page */
+  height: 48px;                                   /* consistent button height */
+  border-radius: 14px;                            /* rounded */
+  border: 1px solid rgba(255,255,255,.18);        /* subtle outline */
+  background: rgba(18,31,29,.7);                  /* dark glassy bg */
+  color: #eaf7f1;                                 /* readable text */
+  font-weight: 800;                               /* bold label */
+}
+.results .cta.primary {                           /* primary/minty CTA */
+  background: linear-gradient(180deg, var(--mint), var(--mint-soft)); /* your mint gradient */
+  color: #073d2b;                                 /* dark text for contrast */
+  box-shadow: 0 10px 28px rgba(0,0,0,.35),        /* outer drop shadow */
+              inset 0 1px 0 rgba(255,255,255,.35);/* glossy top line */
+}
+/* Two stat tiles (Best Hole + Total Strokes) */
+.results-stats.two {
+  margin: 14px 0 6px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.results-stats .stat {
+  background: rgba(18,31,29,0.9);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 12px 14px;
+  text-align: center;
+}
+.results-stats .stat-label {
+  color: #c9d6f2;
+  font-size: 12px;
+}
+.results-stats .stat-value {
+  color: var(--mint);
+  font-weight: 900;
+  font-size: 24px;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+/* Make the action row 3-up for New Game · Share · Home */
+.results-actions.three {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* (Optional) stack buttons on very small phones */
+@media (max-width: 420px) {
+  .results-actions.three { grid-template-columns: 1fr; }
+}
+/* === Final Scores button (global) === */
+.final-scores-btn {
+  width: 100%;
+  height: 56px;
+  border-radius: 16px;
+
+  /* dark glassy vibe like the mock */
+  background: rgba(18, 31, 29, 0.9);
+  color: #eaf7f1;
+  font-weight: 900;
+  letter-spacing: .2px;
+
+  /* subtle mint outline + glossy top line + soft drop shadow */
+  border: 1px solid rgba(124, 247, 193, 0.35);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.25);
+  cursor: pointer;
+  transition: transform .06s, filter .15s, box-shadow .15s;
+}
+
+.final-scores-btn:hover {
+  filter: brightness(1.03);
+}
+
+.final-scores-btn:active {
+  transform: translateY(1px);
+}
+/* === Final Scores panel (Results page) === */
+.final-scores {
+  background: rgba(18,31,29,0.92);        /* dark glassy card */
+  border: 1px solid rgba(124,247,193,0.25);
+  border-radius: 18px;
+  padding: 12px 12px 6px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+
+.final-scores .panel-title {
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: 0.18em;                 /* spaced-out “FINAL SCORES” */
+  font-size: 12px;
+  color: #bff5df;                          /* minty label */
+  opacity: .95;
+  margin-bottom: 6px;
+}
+
+/* reuse your existing score-grid spacing inside the panel */
+.final-scores .score-grid {
+  display: grid;
+  gap: 0;                                   /* rows are separated by dividers */
+}
+
+/* row look like mock: flat rows with separators (no circle badge) */
+.score-row {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;     /* ordinal | name | total */
+  align-items: center;
+  padding: 12px 10px;
+  background: transparent;                  /* use panel bg */
+  border: 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.score-row:first-child { border-top: 0; }
+
+.score-row.first {                           /* slight highlight for winner */
+  background: rgba(124,247,193,0.06);
+}
+
+.score-row .ord {
+  font-weight: 800;
+  color: #cfeee4;
+}
+
+.score-row .who {
+  color: #f5f7fa;
+  font-weight: 800;
+}
+
+.score-row .total {
+  font-weight: 900;
+  color: #dfe7ff;
+  font-size: 18px;
+}
+/* === Results: “Congratulations Alex!” hero === */
+.congrats{
+  /* put the two words on two lines and center them */
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+
+  margin: 6px 0 12px;
+  text-align: center;
+
+  /* look & feel like the mock */
+  color: var(--mint);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: .2px;
+  text-shadow:
+    0 1px 0 rgba(0,0,0,.20),
+    0 18px 36px rgba(0,0,0,.45);
+}
+
+.congrats span{ display:block; }
+
+/* Top line “Congratulations” */
+.congrats span:first-child{
+  font-size: clamp(22px, 7.5vw, 40px);
+}
+
+/* Second line: winner’s name, a bit larger */
+.congrats .name{
+  font-size: clamp(28px, 9vw, 48px);
 }
