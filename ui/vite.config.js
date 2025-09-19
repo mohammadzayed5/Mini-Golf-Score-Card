@@ -1,16 +1,17 @@
-import {defineConfig} from 'vite'
+// ui/vite.config.js
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-//https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true,  //This wil bind to 0.0.0.0 so dev server can be opened on phone
+    host: true,
     port: 5173,
+    allowedHosts: ['minigolfscoretracker.com', 'www.minigolfscoretracker.com'],
+    hmr: false, // keep off until everything renders through the tunnel
     proxy: {
-      //Any request starting with /api from React dev server will be forwarded (proxied) to Flask at port 5000
       '/api': {
-        target: 'http://127.0.0.1:5001', //Flask Address
+        target: 'http://127.0.0.1:5001',
         changeOrigin: true,
       },
     },

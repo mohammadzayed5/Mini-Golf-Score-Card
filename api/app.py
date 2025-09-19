@@ -20,7 +20,13 @@ def create_app() -> Flask:
     app.register_blueprint(players_bp, url_prefix="/api")
 
     #This enables Flask CORS for all /api/* routes so Iphone can call api
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Allow the UI origin
+    CORS(app, resources={r"/api/*": {"origins": [
+        "https://minigolfscoretracker.com",
+        "https://www.minigolfscoretracker.com",
+        "http://localhost:5173"  # optional for local testing
+    ]}})
+
 
     return app
 

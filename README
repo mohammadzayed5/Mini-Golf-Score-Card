@@ -5,6 +5,7 @@ npm install react-router-dom: This installs a router for React, so app can have 
 
 To run API: 
 cd into api, 
+pip install -r requirements.txt
 source .venv/bin/activate
 python app.py
 
