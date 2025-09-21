@@ -1,18 +1,15 @@
 # Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.db
-.venv/
+api/.venv/
+api/__pycache__/
+api/*.pyc
 
-# Flask
-instance/
+# Node
+ui/node_modules/
+ui/.vite/
+ui/dist/
+ui/.env
+ui/.env.*.local
 
-# Node / React
-node_modules/
-dist/
-build/
-
-# macOS
+# OS/editor junk
 .DS_Store
+*.log
