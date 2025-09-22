@@ -6,6 +6,8 @@ from flask_cors import CORS
 from hello import bp as hello_bp
 from games import bp as games_bp
 from players import bp as players_bp
+from courses import bp as courses_bp
+
 
 
 
@@ -18,6 +20,8 @@ def create_app() -> Flask:
     app.register_blueprint(hello_bp, url_prefix="/api")
     app.register_blueprint(games_bp, url_prefix="/api")
     app.register_blueprint(players_bp, url_prefix="/api")
+    app.register_blueprint(courses_bp, url_prefix="/api")
+
 
     #This enables Flask CORS for all /api/* routes so Iphone can call api
     CORS(app, resources={r"/api/*": {"origins": "*"}})

@@ -12,7 +12,9 @@ NEXT_ID = 1
 PLAYERS = [] # [{"id": int, "name": str, "wins": int}]
 NEXT_PLAYER_ID = 1
 
-
+#Courses
+COURSES = []   # [{"id": int, "name": str, "holes": int}]
+NEXT_COURSE_ID = 1
 
 def create_game(name: str, holes: int, players=None) -> dict:
 
@@ -122,3 +124,21 @@ def set_score(game_id: int, player: str, hole_index: int, score) -> dict | None:
     return game
 
 
+def create_course(name: str, holes: int) -> dict:
+    global NEXT_COURSE_ID
+    clean = " ".join(str(name).split())
+    holes = int(holes)
+    c = {"id": NEXT_COURSE_ID, "name": clean, "holes": holes}
+    COURSES.append(c)
+    NEXT_COURSE_ID += 1
+    return c
+
+def list_courses() -> list[dict]:
+    return COURSES
+
+def get_course(course_id: int) -> dict | None:
+    try:
+        cid = int(course_id)
+    except (TypeError, ValueError):
+        return None
+    return next((c for c in COURSES if c["id"] == cid), None)
