@@ -2,7 +2,7 @@
 #Data storage is in store.py
 
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from store import create_game, list_games, get_game, update_game, get_player, set_score
 
 
@@ -18,6 +18,7 @@ def _parse_players(value) -> list[str]:
         raw = value.split(",")
     else:
         raw = [value]
+
 
     # Clean + de-dup (preserve order)
     seen = set()
@@ -81,15 +82,35 @@ def post_game():
     if errors:
         return jsonify({"errors": errors}), 400
 
-    #Delegate to store.py to create and return the game record
-    #store.create_game sets up "scores" dict keyed by player names.
-    game = create_game(name=name, holes=holes, players=players)
-    return jsonify(game), 201
+    # Check if user is logged in
+    if 'user_id' in session and session.get('authenticated'):
+        user_id = session['user_id']  # Logged in - game belongs to them
+        #Delegate to store.py to create and return the game record
+        game = create_game(name=name, holes=holes, players=players, user_id=user_id)
+        return jsonify(game), 201
+    else:
+        # Guest mode - return game data but don't save to database
+        scores = {player: [None] * holes for player in players}
+        return jsonify({
+            "id": None,  # No database ID for guest data
+            "name": name,
+            "holes": holes,
+            "players": players,
+            "scores": scores,
+            "user_id": None,
+            "created_at": None
+        }), 201
 
 @bp.get("/games")
 def get_games():
     #Get /api/games -> list of games/
-    return jsonify(list_games())
+    # Check if user is logged in
+    if 'user_id' in session and session.get('authenticated'):
+        user_id = session['user_id']  # Logged in - get their games
+        return jsonify(list_games(user_id=user_id))
+    else:
+        # Guest mode - return empty list (data managed in frontend)
+        return jsonify([])
 
 @bp.get("/games/<int:game_id>")
 def get_games_by_id(game_id: int):

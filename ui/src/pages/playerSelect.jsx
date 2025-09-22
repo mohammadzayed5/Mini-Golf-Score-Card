@@ -2,7 +2,7 @@
 //useEffect will run side effects list fetching from API when dependenicies change
 // apiFetch is a helper function that prefixes /api/... to correct backend URL
 import {useEffect, useState} from "react";
-import {apiFetch} from "../lib/api";
+import {guestApiFetch} from "../lib/guestApi";
 import { useNavigate } from "react-router-dom";
 
 
@@ -51,7 +51,7 @@ export default function PlayerSelect() {
           setErr("");
           setLoading(true);
           try {
-              const res = await apiFetch("/api/players"); //GET Players
+              const res = await guestApiFetch("/api/players"); //GET Players
               if(!res.ok) throw new Error(`HTTP ${res.status}`);
               const data = await res.json();
               if(!cancelled) setPlayers(data); //update state
@@ -75,7 +75,7 @@ export default function PlayerSelect() {
       if(!name || !name.trim()) return;
       try {
           // Access API
-          const res = await apiFetch("/api/players", {
+          const res = await guestApiFetch("/api/players", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name: name.trim() }),
@@ -106,7 +106,7 @@ export default function PlayerSelect() {
       try{
           //Calls Flask API to create new game
           //Due to Vite proxy, /api/games will go to http://127.0.0.1:5001/api/games
-          const res = await apiFetch(`/api/games`, {
+          const res = await guestApiFetch(`/api/games`, {
               method: 'POST',
               headers: {'Content-Type': 'application/json'},
               body: JSON.stringify({

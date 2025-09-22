@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { apiFetch } from '../lib/api';
+import { guestApiFetch } from '../lib/guestApi';
+import confetti from 'canvas-confetti';
 
 
 export default function Results() {
@@ -10,15 +11,53 @@ export default function Results() {
     const [game, setGame] = useState(null);               // Holds the loaded game {id, name, holes, players, scores}
     const [error, setError] = useState('');               // Holds error message text for UI 
 
+    //Confetti animation
+    const triggerConfetti = () => {
+      const duration = 5000; //5 seconds of confetti
+      const animationEnd = Date.now() + duration;
+
+      const randomInRange = (min,max) => Math.random() * (max - min) + min;
+      //Launch confetti bursts every 250ms
+      const interval = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            clearInterval(interval);
+            return;
+        }
+
+        // Left side burst
+        confetti({
+            particleCount: randomInRange(50, 100),
+            angle: randomInRange(55, 125),
+            spread: randomInRange(50, 70),
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff']
+        });
+
+        // Right side burst
+        confetti({
+            particleCount: randomInRange(50, 100),
+            angle: randomInRange(55, 125),
+            spread: randomInRange(50, 70),
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff']
+        });
+    }, 250);
+    };
+
     useEffect(() => {                                      // Run on mount and whenever id changes
         let stop = false;                                    // Guard so we don’t set state after unmount
         (async () => {                                       // Immediately-invoked async function for fetch
           setError('');                                      // Clear any previous error before loading
           try {
-            const res = await apiFetch(`/api/games/${id}`);  // GET the game by id from Flask
+            const res = await guestApiFetch(`/api/games/${id}`);  // GET the game by id from Flask
             if (!res.ok) throw new Error(`HTTP ${res.status}`); // Throw to go to catch on non-2xx
             const data = await res.json();                   // Parse JSON
-            if (!stop) setGame(data);                        // Only set state if still mounted
+            if (!stop) {
+              setGame(data);                                 //Only set state if still mounted
+              triggerConfetti();                             //Confetti!!!
+            }
           } catch (e) {
             console.error(e);                                // Log for dev
             if (!stop) setError('Could not load results.');  // Show friendly error

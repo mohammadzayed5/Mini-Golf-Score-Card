@@ -9,6 +9,7 @@ import History from './pages/History.jsx'
 import Courses from './pages/Courses.jsx'
 import PlayerSelect from './pages/playerSelect.jsx'
 import Results from './pages/Results.jsx'
+import ProtectedRoute from './components/ProtectedRoute.jsx'
 
 export default function App() {
   return (
@@ -16,8 +17,16 @@ export default function App() {
         {/*All routes inside TabLayout will show the bottom Navigation Bar */}
       <Route element={<TabLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/players" element={<Players />} />
-        <Route path="/history" element={<History />} />
+        <Route path="/players" element={
+          <ProtectedRoute redirectTo="/players">
+            <Players />
+          </ProtectedRoute>
+        } />
+        <Route path="/history" element={
+          <ProtectedRoute redirectTo="/history">
+            <History />
+          </ProtectedRoute>
+        } />
         <Route path="/courses" element={<Courses />} />
         <Route path="/playerSelect" element={<PlayerSelect />} />
       </Route>

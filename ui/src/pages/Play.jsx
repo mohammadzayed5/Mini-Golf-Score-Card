@@ -1,6 +1,6 @@
 import { useEffect, useState} from 'react'
 import { useParams, useNavigate} from 'react-router-dom'
-import {apiFetch} from '../lib/api' 
+import {guestApiFetch} from '../lib/guestApi' 
 
 
 export default function Play() {
@@ -22,7 +22,7 @@ export default function Play() {
             setError(''); //clear Errors before trying
             try{
                 //Get api/games/:id to fetch the game details from Flask
-                const res = await apiFetch(`/api/games/${id}`);
+                const res = await guestApiFetch(`/api/games/${id}`);
 
                 if(!res.ok) throw new Error(`HTTP ${res.status}`);
 
@@ -56,7 +56,7 @@ export default function Play() {
       }));
     // persist to API
     try {
-      const res = await apiFetch(`/api/games/${game.id}/score`, {
+      const res = await guestApiFetch(`/api/games/${game.id}/score`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ player, hole: hole1, score: value }),

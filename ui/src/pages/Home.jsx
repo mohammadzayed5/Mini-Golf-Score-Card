@@ -1,8 +1,10 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {apiFetch} from '../lib/api' 
+import {apiFetch} from '../lib/api'
 import golfBall from "../assets/golf-ball.svg";
 import ball from "../assets/whitegolfball.png"
+import { useAuth } from '../contexts/AuthContext'
+import AuthPrompt from '../components/AuthPrompt'
 
 
 export default function Home() {
@@ -11,9 +13,17 @@ export default function Home() {
     //Local UI state to show loading/errors while creating a game
     const [creating, setCreating] = useState(false)
     const [error, setError] = useState('')
+    const [showAuthPrompt, setShowAuthPrompt] = useState(false)
+
+    // Auth context
+    const { isAuthenticated, logout, user } = useAuth()
 
     const startNewGame = () => {
-        navigate('/courses');
+        if (isAuthenticated) {
+            navigate('/courses');
+        } else {
+            setShowAuthPrompt(true);
+        }
     };
 
 
@@ -25,6 +35,20 @@ export default function Home() {
                 <span>Score Tracker</span>
                 </h1>
             
+            {/* Show user info if logged in */}
+            {isAuthenticated && (
+                <div style={{marginBottom: '16px', color: 'var(--mint)'}}>
+                    Welcome back, {user?.username}!
+                    <button
+                        onClick={logout}
+                        style={{marginLeft: '12px', padding: '4px 8px', fontSize: '14px'}}
+                        className="cta"
+                    >
+                        Logout
+                    </button>
+                </div>
+            )}
+
             {/* Mobile-friendly button*/}
             <img className="hero-ball" src={ball} alt="" aria-hidden />
 
@@ -39,6 +63,14 @@ export default function Home() {
 
             {/* Show API error if any */}
             {error && <p className="error">{error}</p>}
+
+            {/* Auth prompt when needed */}
+            {showAuthPrompt && (
+                <AuthPrompt
+                    onClose={() => setShowAuthPrompt(false)}
+                    redirectTo="/courses"
+                />
+            )}
 
         </main>
     );

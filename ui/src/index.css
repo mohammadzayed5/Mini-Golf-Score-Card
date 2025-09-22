@@ -212,6 +212,7 @@ body { display: block; }
   grid-template-columns: 72px 1fr auto;
   align-items: center;
   gap: 16px;
+  position: relative;                  /* Allow absolute positioning for delete button */
 
   background: #212937;                 /* same vibe as mockup */
   border: 1px solid rgba(255,255,255,0.08);
@@ -272,6 +273,42 @@ body { display: block; }
 .add-player .plus {
   font-size: 22px;
   line-height: 1;
+}
+
+/* Delete button */
+.delete-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ff6b6b;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(10px);
+  z-index: 1;
+  opacity: 0.7;
+}
+
+.delete-btn:hover {
+  background: rgba(255, 107, 107, 0.15);
+  color: #ff5252;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 107, 107, 0.25);
 }
 
 
@@ -731,7 +768,162 @@ body { display: block; }
   font-size: clamp(22px, 7.5vw, 40px);
 }
 
-/* Second line: winner’s name, a bit larger */
+/* Second line: winner's name, a bit larger */
 .congrats .name{
   font-size: clamp(28px, 9vw, 48px);
+}
+
+/* === Auth Components === */
+
+/* Auth overlay (modal backdrop) */
+.auth-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+/* Auth modal container */
+.auth-modal {
+  background: var(--bg-deep);
+  border: 2px solid var(--mint-soft);
+  border-radius: 16px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--mint);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(124, 247, 193, 0.1);
+}
+
+/* Auth content areas */
+.auth-prompt-content,
+.auth-form-content {
+  padding: 32px 24px 24px;
+  text-align: center;
+}
+
+.auth-prompt-content h2,
+.auth-form-content h2 {
+  color: var(--mint);
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.auth-prompt-content p,
+.auth-form-content p {
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 24px;
+  line-height: 1.4;
+}
+
+/* Auth options (buttons in prompt) */
+.auth-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Form styling */
+.auth-form-content form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  color: var(--mint);
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgba(124, 247, 193, 0.3);
+  border-radius: 8px;
+  background: rgba(15, 27, 25, 0.8);
+  color: white;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--mint-soft);
+}
+
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error messages */
+.error-message {
+  background: rgba(255, 100, 100, 0.1);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  color: #ffaaaa;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Auth switching links */
+.auth-switch {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.auth-switch p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--mint-soft);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+  margin-left: 4px;
+  transition: color 0.2s;
+}
+
+.link-btn:hover {
+  color: var(--mint);
 }

@@ -3,7 +3,7 @@
 // apiFetch is a helper function that prefixes /api/... to correct backend URL
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {apiFetch} from "../lib/api";
+import {guestApiFetch} from "../lib/guestApi";
 
 export default function Courses() {
 
@@ -36,7 +36,7 @@ export default function Courses() {
                 setErr("");
                 setLoading(true);
                 try {
-                    const res = await apiFetch("/api/courses"); //GET Courses
+                    const res = await guestApiFetch("/api/courses"); //GET Courses
                     if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const data = await res.json();
                     if(!cancelled) setCourses(data); //update state
@@ -65,7 +65,7 @@ export default function Courses() {
 
             try {
                 // Access API
-                const res = await apiFetch("/api/courses", {
+                const res = await guestApiFetch("/api/courses", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ name: name.trim(), holes }),
@@ -83,6 +83,25 @@ export default function Courses() {
               } catch {
                 setCourses((p) => [...p, { id: Date.now(), name: name.trim(), holes }]);
               }
+            };
+
+            const deleteCourse = async (courseId, courseName) => {
+                if (!window.confirm(`Delete ${courseName}?`)) return;
+
+                setErr(""); // Clear any previous error messages
+
+                try {
+                    const res = await guestApiFetch(`/api/courses/${courseId}`, {
+                        method: "DELETE"
+                    });
+                    if (res.ok) {
+                        setCourses(c => c.filter(course => course.id != courseId));
+                    } else {
+                        setErr("Could not delete course.");
+                    }
+                } catch {
+                    setErr("Could not delete course.");
+                }
             };
 
             const selectCourse = (course) => {
@@ -112,8 +131,19 @@ export default function Courses() {
                           <div className="player-name">{c.name}</div>
                           <div className="player-stats">Holes: {c.holes ?? 0}</div>
                         </div>
-            
-                        {/* (Optional) actions could go here later, like edit/delete */}
+
+                        {/* Delete button */}
+                        <button
+                          className="delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering the course selection
+                            deleteCourse(c.id, c.name);
+                          }}
+                          aria-label={`Delete ${c.name}`}
+                          title="Delete course"
+                        >
+                          ×
+                        </button>
                       </li>
                     ))}
                   </ul>

@@ -1,8 +1,8 @@
 //Use state will let the component remember values across render (players list, loading, error)
 //useEffect will run side effects list fetching from API when dependenicies change
-// apiFetch is a helper function that prefixes /api/... to correct backend URL
+// guestApiFetch is a helper function that handles guest vs user data automatically
 import {useEffect, useState} from "react";
-import {apiFetch} from "../lib/api";
+import {guestApiFetch} from "../lib/guestApi";
 
 export default function Players() {
     //players is an array of {id, name, wins}
@@ -29,7 +29,7 @@ export default function Players() {
                 setErr("");
                 setLoading(true);
                 try {
-                    const res = await apiFetch("/api/players"); //GET Players
+                    const res = await guestApiFetch("/api/players"); //GET Players
                     if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const data = await res.json();
                     if(!cancelled) setPlayers(data); //update state
@@ -53,7 +53,7 @@ export default function Players() {
             if(!name || !name.trim()) return;
             try {
                 // Access API
-                const res = await apiFetch("/api/players", {
+                const res = await guestApiFetch("/api/players", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ name: name.trim() }),
@@ -72,6 +72,25 @@ export default function Players() {
                 setPlayers((p) => [...p, { id: Date.now(), name: name.trim(), wins: 0 }]);
               }
             };
+
+        const deletePlayer = async (playerId, playerName) => {
+            if (!window.confirm(`Delete ${playerName}?`)) return;
+
+            setErr(""); // Clear any previous error messages
+
+            try {
+                const res = await guestApiFetch(`/api/players/${playerId}`, {
+                    method: "DELETE"
+                });
+                if (res.ok) {
+                    setPlayers(p => p.filter(player => player.id != playerId));
+                } else {
+                    setErr("Could not delete player.");
+                }
+            } catch (error) {
+                setErr("Could not delete player.");
+            }
+        };
             return (
                 <main className="page players">
                   <h1 className="title">Players</h1>
@@ -92,8 +111,16 @@ export default function Players() {
                           <div className="player-name">{p.name}</div>
                           <div className="player-stats">Wins: {p.wins ?? 0}</div>
                         </div>
-            
-                        {/* (Optional) actions could go here later, like edit/delete */}
+
+                        {/* Delete button */}
+                        <button
+                          className="delete-btn"
+                          onClick={() => deletePlayer(p.id, p.name)}
+                          aria-label={`Delete ${p.name}`}
+                          title="Delete player"
+                        >
+                          ×
+                        </button>
                       </li>
                     ))}
                   </ul>

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../lib/api.js";
 
 export default function ApiHello() {
   const [msg, setMsg] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/hello")
+    apiFetch("/api/hello")
       .then(r => r.json())
       .then(d => setMsg(d.message))
       .catch(() => setMsg("Could not reach Flask"));
