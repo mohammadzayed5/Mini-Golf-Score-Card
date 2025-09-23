@@ -19,6 +19,14 @@ def create_app() -> Flask:
     app = Flask(__name__)
     #Secret key for session encryption
     app.secret_key = 'minigolf-secret-key-2004'
+
+    #Session cookie configuration for cross-origin requests
+    app.config['SESSION_COOKIE_SECURE'] = True
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+    app.config['SESSION_COOKIE_DOMAIN'] = None
+    app.config['PERMANENT_SESSION_LIFETIME'] = 86400
+
     #Mount both blueprints under /api
     app.register_blueprint(hello_bp, url_prefix="/api")
     app.register_blueprint(games_bp, url_prefix="/api")

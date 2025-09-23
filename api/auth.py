@@ -59,6 +59,7 @@ def login_route():
     #Check result
     if user:
         #Success
+        session.permanent = True
         session['user_id'] = user['id']
         session['username'] = user['username']
         session['authenticated'] = True
