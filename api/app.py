@@ -28,7 +28,7 @@ def create_app() -> Flask:
 
 
     #This enables Flask CORS for all /api/* routes so Iphone can call api
-    CORS(app, resources={r"/api/*": {"origins": "*", "supports_credentials":True}})
+    CORS(app, resources={r"/api/*": {"origins": ["https://minigolfscoretracker.com", "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174"], "supports_credentials":True}})
 
     return app
 
