@@ -2,6 +2,7 @@
 from database import get_db, dict_from_row, dicts_from_rows, init_db
 import hashlib
 import secrets #For generating random salts
+import sqlite3
 # Initialize database on import
 init_db()
 
@@ -236,6 +237,38 @@ def get_player(player_id: int) -> dict | None:
         cursor.execute("SELECT * FROM players WHERE id = ?", (pid,))
         row = cursor.fetchone()
         return dict_from_row(row)
+    
+def update_player_wins(player_name: str, user_id=None) -> bool:
+    #increment wins for a player by their name
+    with get_db() as conn:
+        cursor = conn.cursor()
+        #Try to find the existing player
+        if user_id is not None:
+            cursor.execute(
+                "UPDATE players SET wins = wins + 1 WHERE name = ? AND (user_id = ? OR user_id IS NULL)",
+
+                (player_name, user_id)
+            )
+        else:
+            cursor.execute(
+                "UPDATE players SET wins = wins + 1 WHERE name = ? AND user_id IS NULL",
+                (player_name,)
+            )
+        if cursor.rowcount > 0:
+            conn.commit()
+            return True
+        #If no existing player is found, create one with 1 win
+        try:
+            cursor.execute(
+                "INSERT INTO players (user_id, name, wins) VALUES (?,?,1)",
+                (user_id, player_name)
+            )
+            conn.commit()
+            return True
+        except sqlite3.IntegrityError:
+            #Handle race condition if player was created between UPDATE and INSERT
+            return False
+
 
 def set_score(game_id: int, player: str, hole_index: int, score) -> dict | None:
     """Set score (or None) for player at hole_index (0-based)."""

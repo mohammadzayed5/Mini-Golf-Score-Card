@@ -54,17 +54,19 @@ export default function Play() {
           [player]: g.scores[player].map((v, i) => (i === hi ? value : v)), 
         },
       }));
-    // persist to API
-    try {
-      const res = await guestApiFetch(`/api/games/${game.id}/score`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ player, hole: hole1, score: value }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    } catch (e) {
-      console.error(e);
-      setError('Could not save score.');
+    // persist to API only for logged-in games (guest games have id === null)
+    if (game.id !== null) {
+      try {
+        const res = await guestApiFetch(`/api/games/${game.id}/score`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ player, hole: hole1, score: value }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      } catch (e) {
+        console.error(e);
+        setError('Could not save score.');
+      }
     }
   };
 
@@ -144,14 +146,21 @@ export default function Play() {
     
           {/* Bottom CTA (placeholder) */}
           <div className="leaderboard-cta-wrap">
-            <button className="leaderboard-cta" onClick={() => alert('TODO: leaderboard')}>
-              View Leaderboard
-            </button>
             {/*Only show Finish Game on the last hole*/}
             {hole === lastHole && (
               <button
                 className="leaderboard-cta"
-                onClick={() => navigate(`/results/${game.id}`)}
+                onClick={() => {
+                  if (game?.id === null) {
+                    // Store guest game data in sessionStorage as backup
+                    sessionStorage.setItem('guestGameData', JSON.stringify(game));
+                    // Guest game - pass game data directly
+                    navigate('/results/guest', { state: { gameData: game } });
+                  } else {
+                    // Logged-in game - use normal route
+                    navigate(`/results/${game.id}`);
+                  }
+                }}
               >
                 Finish Game
               </button>

@@ -12,6 +12,21 @@ export default function Players() {
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
 
+    // Helper function to merge players with guest wins from localStorage
+    const mergePlayersWithGuestWins = (playersData) => {
+        const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+
+        return playersData.map(player => {
+            const dbWins = player.wins || 0;
+            const guestWinsForPlayer = guestWins[player.name] || 0;
+            const totalWins = dbWins + guestWinsForPlayer;
+            return {
+                ...player,
+                wins: totalWins
+            };
+        });
+    };
+
     //Helper Function to make initials from a name
     const initials = (name) =>
         name
@@ -32,11 +47,26 @@ export default function Players() {
                     const res = await guestApiFetch("/api/players"); //GET Players
                     if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const data = await res.json();
-                    if(!cancelled) setPlayers(data); //update state
+
+                    const mergedPlayers = mergePlayersWithGuestWins(data);
+
+                    if(!cancelled) setPlayers(mergedPlayers); //update state with merged wins
                 }   catch (e) {
                     if (!cancelled) {
-                        setErr("No current players.");
-                        setPlayers([]);
+                        // In guest mode, still show guest wins even if API fails
+                        const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+                        const guestPlayers = Object.keys(guestWins).map((name, index) => ({
+                            id: `guest-${index}`,
+                            name: name,
+                            wins: guestWins[name]
+                        }));
+
+                        if (guestPlayers.length > 0) {
+                            setPlayers(guestPlayers);
+                        } else {
+                            setErr("No current players.");
+                            setPlayers([]);
+                        }
                 }
             } finally {
                 if (!cancelled) setLoading(false);
@@ -60,16 +90,18 @@ export default function Players() {
                 });
                 if (res.ok) {
                   const created = await res.json();
-                  setPlayers((p) => [...p, created]);
+                  const mergedCreated = mergePlayersWithGuestWins([created])[0];
+                  setPlayers((p) => [...p, mergedCreated]);
                 } else {
                   // If API isn't ready, add locally so you can keep moving
-                  setPlayers((p) => [
-                    ...p,
-                    { id: Date.now(), name: name.trim(), wins: 0 },
-                  ]);
+                  const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
+                  const mergedPlayer = mergePlayersWithGuestWins([newPlayer])[0];
+                  setPlayers((p) => [...p, mergedPlayer]);
                 }
               } catch {
-                setPlayers((p) => [...p, { id: Date.now(), name: name.trim(), wins: 0 }]);
+                const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
+                const mergedPlayer = mergePlayersWithGuestWins([newPlayer])[0];
+                setPlayers((p) => [...p, mergedPlayer]);
               }
             };
 

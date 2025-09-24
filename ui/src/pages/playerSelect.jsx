@@ -3,7 +3,7 @@
 // apiFetch is a helper function that prefixes /api/... to correct backend URL
 import {useEffect, useState} from "react";
 import {guestApiFetch} from "../lib/guestApi";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 
 export default function PlayerSelect() {
@@ -16,6 +16,23 @@ export default function PlayerSelect() {
   const [creating, setCreating] = useState(false);
   const [selected, setSelected] = useState(new Set());
   const navigate = useNavigate();
+  const location = useLocation()
+  const selectedCourse = location.state?.course;
+
+  // Helper function to merge players with guest wins from localStorage
+  const mergePlayersWithGuestWins = (playersData) => {
+    const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+
+    return playersData.map(player => {
+      const dbWins = player.wins || 0;
+      const guestWinsForPlayer = guestWins[player.name] || 0;
+      const totalWins = dbWins + guestWinsForPlayer;
+      return {
+        ...player,
+        wins: totalWins
+      };
+    });
+  };
   
 
   //Helper Function to make initials from a name
@@ -43,6 +60,7 @@ export default function PlayerSelect() {
     }
   };
 
+
     //Load
   useEffect(() => {
       let cancelled = false; //this avoids setting state after unmount
@@ -54,12 +72,27 @@ export default function PlayerSelect() {
               const res = await guestApiFetch("/api/players"); //GET Players
               if(!res.ok) throw new Error(`HTTP ${res.status}`);
               const data = await res.json();
-              if(!cancelled) setPlayers(data); //update state
+
+              const mergedPlayers = mergePlayersWithGuestWins(data);
+
+              if(!cancelled) setPlayers(mergedPlayers); //update state
           }   catch (e) {
               if (!cancelled) {
-                  setErr("No current players.");
-                  setPlayers([]);
-          }
+                  // In guest mode, still show guest wins even if API fails
+                  const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+                  const guestPlayers = Object.keys(guestWins).map((name, index) => ({
+                    id: `guest-${index}`,
+                    name: name,
+                    wins: guestWins[name]
+                  }));
+
+                  if (guestPlayers.length > 0) {
+                    setPlayers(guestPlayers);
+                  } else {
+                    setErr("No current players.");
+                    setPlayers([]);
+                  }
+              }
       } finally {
           if (!cancelled) setLoading(false);
       }
@@ -82,16 +115,18 @@ export default function PlayerSelect() {
           });
           if (res.ok) {
             const created = await res.json();
-            setPlayers((p) => [...p, created]);
+            const mergedCreated = mergePlayersWithGuestWins([created])[0];
+            setPlayers((p) => [...p, mergedCreated]);
           } else {
             // If API isn't ready, add locally so you can keep moving
-            setPlayers((p) => [
-              ...p,
-              { id: Date.now(), name: name.trim(), wins: 0 },
-            ]);
+            const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
+            const mergedPlayer = mergePlayersWithGuestWins([newPlayer])[0];
+            setPlayers((p) => [...p, mergedPlayer]);
           }
         } catch {
-          setPlayers((p) => [...p, { id: Date.now(), name: name.trim(), wins: 0 }]);
+          const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
+          const mergedPlayer = mergePlayersWithGuestWins([newPlayer])[0];
+          setPlayers((p) => [...p, mergedPlayer]);
         }
       };
     //Click handler for "Start Game"
@@ -110,8 +145,8 @@ export default function PlayerSelect() {
               method: 'POST',
               headers: {'Content-Type': 'application/json'},
               body: JSON.stringify({
-                 name: 'New Round', 
-                 holes: 18,
+                 name: selectedCourse ? `${selectedCourse.name} Round`: 'New Round', 
+                 holes: selectedCourse ? selectedCourse.holes : 18,
                 playerIds: Array.from(selected),
               }),
           });
@@ -155,11 +190,11 @@ export default function PlayerSelect() {
                 {/* optional check icon; keeps it text-free */}
                 {isSelected ? "✓" : ""}
               </div>
-  
+
               {/* Name and wins */}
               <div className="player-meta">
                 <div className="player-name">{p.name}</div>
-                <div className="player-stats">Wins: {p.wins ?? 0}</div>
+                <div className="player-stats">Wins: {p.wins || 0}</div>
               </div>
   
               {/* (Optional) actions could go here later, like edit/delete */}

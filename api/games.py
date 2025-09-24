@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, jsonify, session
-from store import create_game, list_games, get_game, update_game, get_player, set_score
+from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins
 
 
 bp = Blueprint("games", __name__)
@@ -159,3 +159,38 @@ def patch_score(game_id: int):
     if not updated:
         return jsonify({"error": "Invalid game/player/hole"}), 400
     return jsonify(updated)
+
+@bp.post("/games/<int:game_id>/finish")
+def finish_game(game_id: int):
+    #Finish a game and record wins for the winners
+    #Get the game
+    game = get_game(game_id)
+    if not game:
+        return jsonify({"error": "Game not found"}), 404
+    #Calculate winers (same logic as Results.jsx)
+    totals = []
+    for player in game.get("players", []):
+        scores = game.get("scores", {}).get(player, [])
+        total = sum(score for score in scores if isinstance(score, int))
+        totals.append({"player": player, "total": total})
+
+    if not totals:
+        return jsonify({"error": "No players found"}), 400
+
+    # Sort by lowest score (mini golf)
+    totals.sort(key=lambda x: x["total"])
+    best_score = totals[0]["total"]
+
+    # Find all winners (handle ties)
+    winners = [t["player"] for t in totals if t["total"] == best_score]
+
+    # Update wins for each winner
+    user_id = session.get('user_id') if session.get('authenticated') else None
+    for winner in winners:
+        update_player_wins(winner, user_id)
+
+    return jsonify({
+        "winners": winners,
+        "best_score": best_score,
+        "final_standings": totals
+    })

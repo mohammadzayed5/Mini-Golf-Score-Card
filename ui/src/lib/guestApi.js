@@ -28,10 +28,15 @@ export async function guestApiFetch(url, options = {}) {
             const id = pathParts[pathParts.length - 1]; // e.g., '123'
 
             let data;
-            if (!isNaN(id) && id !== endpoint) {
-                // Single item request (e.g., /api/games/123)
+            if (((!isNaN(id) && id !== endpoint) || id === 'null')) {
+                // Single item request (e.g., /api/games/123 or /api/games/null for guest)
                 const allItems = getGuestData(endpoint);
-                data = allItems.find(item => item.id == id);
+                if (id === 'null') {
+                    // For guest games with id=null, find the first game with null id
+                    data = allItems.find(item => item.id === null);
+                } else {
+                    data = allItems.find(item => item.id == id);
+                }
                 if (!data) {
                     return {
                         ok: false,
@@ -83,11 +88,19 @@ export async function guestApiFetch(url, options = {}) {
                     scores[player] = new Array(holes).fill(null);
                 });
 
-                newItem = addGuestItem(endpoint, {
+                // Create guest game data with null ID
+                const gameData = {
                     ...requestData,
                     players: players,
-                    scores: scores
-                });
+                    scores: scores,
+                    id: null
+                };
+
+                // Store in sessionStorage
+                const currentData = getGuestData(endpoint);
+                const newData = [...currentData, gameData];
+                setGuestData(endpoint, newData);
+                newItem = gameData;
             } else {
                 newItem = addGuestItem(endpoint, requestData);
             }
@@ -114,7 +127,9 @@ export async function guestApiFetch(url, options = {}) {
 
             // Update the game in sessionStorage
             const games = getGuestData('games');
-            const gameIndex = games.findIndex(g => g.id == gameId);
+            const gameIndex = gameId === 'null'
+                ? games.findIndex(g => g.id === null)
+                : games.findIndex(g => g.id == gameId);
 
             if (gameIndex >= 0) {
                 const game = games[gameIndex];
