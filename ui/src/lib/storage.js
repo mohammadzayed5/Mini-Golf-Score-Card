@@ -20,7 +20,14 @@ export function getGuestData(type) {
 // Save data to sessionStorage
 export function setGuestData(type, data) {
     try {
+        console.log('Attempting to save:', type, data);
         sessionStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data));
+        const saved = sessionStorage.getItem(STORAGE_KEYS[type])
+        console.log('Verification - saved data:', saved);
+        if(!saved) {
+            console.error('sessionStorage failed to save!')
+        }
+
     } catch (error) {
         console.warn('Failed to save guest data:', error);
     }
