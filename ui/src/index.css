@@ -33,16 +33,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
-.home {
-  min-height: 100vh;              /* take full height */
-  display: flex;                   /* flex layout */
-  flex-direction: column;          /* stack title + button */
-  justify-content: center;         /* vertical center */
-  align-items: center;             /* horizontal center */
-  gap: 16px;                       /* spacing between items */
-  text-align: center;              /* center text */
-  padding: 24px;                   /* breathing room on small screens */
-}
+
 
 h1 {
   font-size: 3.2em;
@@ -322,9 +313,11 @@ body { display: block; }
   color:var(--mint); font-size:clamp(28px,7vw,48px); display:grid;
 }
 .home-title span+span{ margin-top:2px; }
-.hero-ball{
-  width:clamp(120px,35vw,170px); height:auto; border-radius:50%;
-  filter:drop-shadow(0 18px 38px rgba(0,0,0,.45)); box-shadow:0 0 0 10px rgba(124,247,193,.05);
+.hero-ball {
+  width: clamp(160px, 40vw, 220px);  /* was 120–170px */
+  height: auto;
+  border-radius: 50%;
+  filter: drop-shadow(0 18px 38px rgba(0,0,0,.45));
 }
 .cta.start-round{
   width:min(620px,92%); height:56px; border-radius:9999px;
@@ -926,4 +919,36 @@ body { display: block; }
 
 .link-btn:hover {
   color: var(--mint);
+}
+
+
+/* If the ball sits in a wrapper that draws the rings */
+.hero-ball-wrap,
+.ball-wrap {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.hero-ball-wrap::before,
+.hero-ball-wrap::after {
+  content: none !important;
+}
+/* Kill any halo/ring behind the hero ball */
+.hero-ball,
+.hero-ball::before,
+.hero-ball::after {
+  box-shadow: none !important;
+  filter: none !important;           /* removes the soft drop shadow */
+  background: transparent !important;
+  outline: 0 !important;
+}
+
+/* If a wrapper is adding a radial glow */
+.hero-ball-wrap,
+.ball-wrap {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.hero-ball-wrap::before,
+.hero-ball-wrap::after {
+  content: none !important;
 }

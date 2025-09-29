@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {apiFetch} from '../lib/api'
 import golfBall from "../assets/golf-ball.svg";
-import ball from "../assets/whitegolfball.png"
+import ball from "../assets/Newimage.png"
 import { useAuth } from '../contexts/AuthContext'
 import AuthPrompt from '../components/AuthPrompt'
 
