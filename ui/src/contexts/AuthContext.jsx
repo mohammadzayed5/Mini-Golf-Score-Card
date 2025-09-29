@@ -13,15 +13,20 @@ export function AuthProvider({ children }) {
     }, []);
 
     const checkAuth = async () => {
+        console.log(`Checking authetification...`);
         try {
             const res = await apiFetch('/api/me');
+            console.log(`/api/me response: `, res.status, res,ok);
             if (res.ok) {
                 const userData = await res.json();
+                console.log(`User Authentificated:`, userData);
                 setUser(userData);
             } else {
+                console.log(`authentification failes status:`, red.status);
                 setUser(null);
             }
         } catch (error) {
+            console.log(`Authentification error`), error;
             setUser(null);
         } finally {
             setLoading(false);
@@ -74,6 +79,11 @@ export function AuthProvider({ children }) {
         logout,
         isAuthenticated: !!user
     };
+    console.log(`Auth state:`, {
+        isAuthenticated: !!user,
+        user: user?.username,
+        loading
+    });
 
     return (
         <AuthContext.Provider value={value}>
