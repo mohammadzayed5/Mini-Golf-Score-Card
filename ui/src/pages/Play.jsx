@@ -29,8 +29,26 @@ export default function Play() {
                 const data = await res.json();
                 if(!stopped) {
                   setGame(data);
-                  setHole(1);
-            }
+
+                  const savedHole = sessionStorage.getItem(`game_${id}_currentHole`);
+                  if (savedHole){
+                    setHole(parseInt(savedHole, 10));
+                  } else {
+                    setHole(1);
+                  }
+
+                  //For guest games, check if there are updates scored in sessionStorage
+                  if (data.id == null) {
+                    const gamesData = JSON.parse(sessionStorage.getItem('guest_games') || '[]');
+                    console.log('Looking for guest game data:', gamesData);
+                    const updatedGame = gamesData.find(g => g.id === null);
+                    console.log('Found updated game:', updatedGame);
+                    if (updatedGame && updatedGame.scores) {
+                      console.log('Restoring scores:', updatedGame.scores);
+                      setGame({...data, scores: updatedGame.scores});
+                    }
+                  }
+                }
             } catch(e) {
               console.error(e)
               if(!stopped) setError('Could not load game.');
@@ -56,6 +74,7 @@ export default function Play() {
       }));
     // persist to API only for logged-in games (guest games have id === null)
     if (game.id !== null) {
+      console.log('Saving score for logged-in game:', game.id);
       try {
         const res = await guestApiFetch(`/api/games/${game.id}/score`, {
           method: 'PATCH',
@@ -67,6 +86,19 @@ export default function Play() {
         console.error(e);
         setError('Could not save score.');
       }
+    } else {
+      console.log('Guest mode - score should be saved automatically');
+      // Also save to sessionStorage explicitly for guest games
+      try {
+        const res = await guestApiFetch(`/api/games/null/score`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ player, hole: hole1, score: value }),
+        });
+        console.log('Guest score save result:', res);
+      } catch (e) {
+        console.error('Guest score save error:', e);
+      }
     }
   };
 
@@ -77,10 +109,18 @@ export default function Play() {
     setScore(player, hole, next);
   };
   const resetToZero = (player) => setScore(player, hole, 0);
-  const prevHole = () => setHole(h => Math.max(1, h - 1));
+  const prevHole = () => {
+    const newHole = Math.max(1, hole - 1);
+    setHole(newHole);
+    //Save current hole to sessionStorage
+    sessionStorage.setItem(`game_${id}_currentHole`, newHole);
+  }
   const nextHole = () => {
     const maxHoles = game?.holes ?? 18;
-    setHole(h => Math.min(maxHoles, h + 1));
+    const newHole = Math.min(maxHoles, hole + 1)
+    setHole(newHole);
+    //Save current hole to sessionStorage
+    sessionStorage.setItem(`game_${id}_currentHole`, newHole);
   };
   const lastHole = game?.holes ?? 18;
     //Render an error view if loading failed
