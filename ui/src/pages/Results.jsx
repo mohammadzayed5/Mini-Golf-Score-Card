@@ -85,7 +85,7 @@ export default function Results() {
             
             
             // Update localStorage wins for each winner (with double-counting prevention)
-            const processedGames = JSON.parse(localStorage.getItem('processedGames') || '[]');
+            const processedGames = JSON.parse(sessionStorage.getItem('processedGames') || '[]');
 
             // Check if this exact game result was already processed
             const gameHash = JSON.stringify({
@@ -95,16 +95,16 @@ export default function Results() {
             });
 
             if (!processedGames.includes(gameHash)) {
-              const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+              const guestWins = JSON.parse(sessionStorage.getItem('guestWins') || '{}');
               winners.forEach(winner => {
                 guestWins[winner] = (guestWins[winner] || 0) + 1;
               });
-              localStorage.setItem('guestWins', JSON.stringify(guestWins));
+              sessionStorage.setItem('guestWins', JSON.stringify(guestWins));
 
               // Mark this game as processed
               processedGames.push(gameHash);
               if (processedGames.length > 100) processedGames.shift(); // Keep only last 100 games
-              localStorage.setItem('processedGames', JSON.stringify(processedGames));
+              sessionStorage.setItem('processedGames', JSON.stringify(processedGames));
             }
           }
         } else if (!isGuestMode) {

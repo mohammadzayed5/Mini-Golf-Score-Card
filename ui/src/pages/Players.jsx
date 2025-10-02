@@ -14,7 +14,7 @@ export default function Players() {
 
     // Helper function to merge players with guest wins from localStorage
     const mergePlayersWithGuestWins = (playersData) => {
-        const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+        const guestWins = JSON.parse(sessionStorage.getItem('guestWins') || '{}');
 
         return playersData.map(player => {
             const dbWins = player.wins || 0;
@@ -54,7 +54,7 @@ export default function Players() {
                 }   catch (e) {
                     if (!cancelled) {
                         // In guest mode, still show guest wins even if API fails
-                        const guestWins = JSON.parse(localStorage.getItem('guestWins') || '{}');
+                        const guestWins = JSON.parse(sessionStorage.getItem('guestWins') || '{}');
                         const guestPlayers = Object.keys(guestWins).map((name, index) => ({
                             id: `guest-${index}`,
                             name: name,
