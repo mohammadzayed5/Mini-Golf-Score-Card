@@ -21,10 +21,13 @@ def create_app() -> Flask:
     app = Flask(__name__)
     #Secret key for session encryption
     app.secret_key = 'minigolf-secret-key-2004'
+
+    #Detect if running on Render
+    is_production = os.environ.get('RENDER') is not None or os.environ.get('FLASK_ENV') == 'production'
     #Session cookie configuration for cross-origin requests
-    app.config['SESSION_COOKIE_SECURE'] = os.environ.get('FLASK_ENV') == 'production' #Only secure in production
+    app.config['SESSION_COOKIE_SECURE'] = is_production #True on Render (HTTPS)
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if os.environ.get('FLASK_ENV') == 'production' else 'Lax'
+    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
     app.config['SESSION_COOKIE_DOMAIN'] = None
     app.config['PERMANENT_SESSION_LIFETIME'] = 86400
     #Mount both blueprints under /api
