@@ -1,4 +1,4 @@
-export const BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://mini-golf-score-card.onrender.com');
+export const BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://api.minigolfscoretracker.com');
 
 /**
  * apiFetch(path, opts)

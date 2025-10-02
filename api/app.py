@@ -27,8 +27,8 @@ def create_app() -> Flask:
     #Session cookie configuration for cross-origin requests
     app.config['SESSION_COOKIE_SECURE'] = is_production #True on Render (HTTPS)
     app.config['SESSION_COOKIE_HTTPONLY'] = True
-    app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
-    app.config['SESSION_COOKIE_DOMAIN'] = None
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    app.config['SESSION_COOKIE_DOMAIN'] = '.minigolfscoretracker.com' if is_production else None
     app.config['PERMANENT_SESSION_LIFETIME'] = 86400
     #Mount both blueprints under /api
     app.register_blueprint(hello_bp, url_prefix="/api")
