@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
 // Get data from sessionStorage with fallback
 export function getGuestData(type) {
     try {
-        const data = sessionStorage.getItem(STORAGE_KEYS[type]);
+        const data = localStorage.getItem(STORAGE_KEYS[type]);
         return data ? JSON.parse(data) : [];
     } catch (error) {
         console.warn('Failed to load guest data:', error);
@@ -21,8 +21,8 @@ export function getGuestData(type) {
 export function setGuestData(type, data) {
     try {
         console.log('Attempting to save:', type, data);
-        sessionStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data));
-        const saved = sessionStorage.getItem(STORAGE_KEYS[type])
+        localStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data));
+        const saved = localStorage.getItem(STORAGE_KEYS[type])
         console.log('Verification - saved data:', saved);
         if(!saved) {
             console.error('sessionStorage failed to save!')
@@ -46,6 +46,6 @@ export function addGuestItem(type, item) {
 // Clear all guest data (useful for testing)
 export function clearGuestData() {
     Object.values(STORAGE_KEYS).forEach(key => {
-        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
     });
 }
