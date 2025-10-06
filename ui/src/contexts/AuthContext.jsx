@@ -13,20 +13,20 @@ export function AuthProvider({ children }) {
     }, []);
 
     const checkAuth = async () => {
-        console.log(`Checking authetification...`);
+        console.log(`Checking authentication...`);
         try {
             const res = await apiFetch('/api/me');
-            console.log(`/api/me response: `, res.status, res,ok);
+            console.log(`/api/me response: `, res.status, res.ok);
             if (res.ok) {
                 const userData = await res.json();
-                console.log(`User Authentificated:`, userData);
+                console.log(`User Authenticated:`, userData);
                 setUser(userData);
             } else {
-                console.log(`authentification failes status:`, red.status);
+                console.log(`authentication failed status:`, res.status);
                 setUser(null);
             }
         } catch (error) {
-            console.log(`Authentification error`), error;
+            console.log(`Authentication error:`, error);
             setUser(null);
         } finally {
             setLoading(false);
