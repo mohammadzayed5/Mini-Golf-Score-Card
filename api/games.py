@@ -2,8 +2,9 @@
 #Data storage is in store.py
 
 
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, request, jsonify
 from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins
+from jwt_utils import optional_token
 
 
 bp = Blueprint("games", __name__)
@@ -54,8 +55,9 @@ def _names_from_ids(ids) -> list[str]:
 
 
 @bp.post("/games")
-def post_game():
-    #Create a game.
+@optional_token
+def post_game(current_user):
+    """POST /api/games - Create a new game"""
     data = request.get_json(silent=True) or {}
     name = str(data.get("name", "")).strip()
     holes = data.get("holes", None)
@@ -67,7 +69,7 @@ def post_game():
     #Option B: ids-> names (only if no names provided)
     if not players and "playerIds" in data:
         players = _names_from_ids(data.get("playerIds"))
-    
+
     #Validate inputs
     errors = {}
     if not name:
@@ -82,17 +84,16 @@ def post_game():
     if errors:
         return jsonify({"errors": errors}), 400
 
-    # Check if user is logged in
-    if 'user_id' in session and session.get('authenticated'):
-        user_id = session['user_id']  # Logged in - game belongs to them
-        #Delegate to store.py to create and return the game record
+    if current_user:
+        # Logged in - save to database
+        user_id = current_user['user_id']
         game = create_game(name=name, holes=holes, players=players, user_id=user_id)
         return jsonify(game), 201
     else:
-        # Guest mode - return game data but don't save to database
+        # Guest mode - return mock game (frontend handles storage)
         scores = {player: [None] * holes for player in players}
         return jsonify({
-            "id": None,  # No database ID for guest data
+            "id": None,
             "name": name,
             "holes": holes,
             "players": players,
@@ -102,19 +103,21 @@ def post_game():
         }), 201
 
 @bp.get("/games")
-def get_games():
-    #Get /api/games -> list of games/
-    # Check if user is logged in
-    if 'user_id' in session and session.get('authenticated'):
-        user_id = session['user_id']  # Logged in - get their games
+@optional_token
+def get_games(current_user):
+    """GET /api/games - List all games for current user"""
+    if current_user:
+        # Logged in - return their games
+        user_id = current_user['user_id']
         return jsonify(list_games(user_id=user_id))
     else:
-        # Guest mode - return empty list (data managed in frontend)
+        # Guest mode - return empty list (frontend handles guest data)
         return jsonify([])
 
 @bp.get("/games/<int:game_id>")
-def get_games_by_id(game_id: int):
-    #Get /api/games/<id> -> single game or error/
+@optional_token
+def get_games_by_id(current_user, game_id: int):
+    """GET /api/games/<id> - Get a single game"""
     game = get_game(game_id)
     if not game:
         return jsonify(error="Not found"), 404
@@ -122,8 +125,9 @@ def get_games_by_id(game_id: int):
 
 
 @bp.patch("/games/<int:game_id>")
-def patch_game(game_id: int):
-    #Sends only field you want to change
+@optional_token
+def patch_game(current_user, game_id: int):
+    """PATCH /api/games/<id> - Update a game"""
     data = request.get_json(silent=True) or {}
     name = data.get("name", None)
     holes = data.get("holes", None)
@@ -140,13 +144,20 @@ def patch_game(game_id: int):
         except (TypeError, ValueError):
             return jsonify({"errors": {"holes": "Holes must be an integer"}}), 400
 
-    game = update_game(game_id, name=name, holes=holes, players=players)
-    if not game:
-        return jsonify({"error": "Not found"}), 404
-    return jsonify(game)
+    if current_user:
+        # Logged in - update in database
+        game = update_game(game_id, name=name, holes=holes, players=players)
+        if not game:
+            return jsonify({"error": "Not found"}), 404
+        return jsonify(game)
+    else:
+        # Guest mode - return success (frontend handles updates)
+        return jsonify({"success": True}), 200
 
 @bp.patch("/games/<int:game_id>/score")
-def patch_score(game_id: int):
+@optional_token
+def patch_score(current_user, game_id: int):
+    """PATCH /api/games/<id>/score - Update a score for a player"""
     data = request.get_json(silent=True) or {}
     player = data.get("player")
     hole = data.get("hole")            # 1-based
@@ -155,19 +166,26 @@ def patch_score(game_id: int):
         hi = int(hole) - 1
     except (TypeError, ValueError):
         return jsonify({"errors": {"hole": "Hole must be an integer 1..N"}}), 400
-    updated = set_score(game_id, player, hi, score)
-    if not updated:
-        return jsonify({"error": "Invalid game/player/hole"}), 400
-    return jsonify(updated)
+
+    if current_user:
+        # Logged in - update in database
+        updated = set_score(game_id, player, hi, score)
+        if not updated:
+            return jsonify({"error": "Invalid game/player/hole"}), 400
+        return jsonify(updated)
+    else:
+        # Guest mode - return success (frontend handles scoring)
+        return jsonify({"success": True}), 200
 
 @bp.post("/games/<int:game_id>/finish")
-def finish_game(game_id: int):
-    #Finish a game and record wins for the winners
+@optional_token
+def finish_game(current_user, game_id: int):
+    """POST /api/games/<id>/finish - Finish a game and record wins"""
     #Get the game
     game = get_game(game_id)
     if not game:
         return jsonify({"error": "Game not found"}), 404
-    #Calculate winers (same logic as Results.jsx)
+    #Calculate winners (same logic as Results.jsx)
     totals = []
     for player in game.get("players", []):
         scores = game.get("scores", {}).get(player, [])
@@ -184,10 +202,11 @@ def finish_game(game_id: int):
     # Find all winners (handle ties)
     winners = [t["player"] for t in totals if t["total"] == best_score]
 
-    # Update wins for each winner
-    user_id = session.get('user_id') if session.get('authenticated') else None
-    for winner in winners:
-        update_player_wins(winner, user_id)
+    if current_user:
+        # Logged in - update wins in database
+        user_id = current_user['user_id']
+        for winner in winners:
+            update_player_wins(winner, user_id)
 
     return jsonify({
         "winners": winners,

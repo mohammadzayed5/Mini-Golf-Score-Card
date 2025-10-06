@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { apiFetch } from '../lib/api';
+import { apiFetch, setToken, clearToken } from '../lib/api';
 
 const AuthContext = createContext();
 
@@ -42,6 +42,7 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
             const data = await res.json();
+            setToken(data.token);  // Store JWT token in localStorage
             setUser(data.user);
             return { success: true };
         } else {
@@ -58,8 +59,10 @@ export function AuthProvider({ children }) {
         });
 
         if (res.ok) {
-            // Auto-login after registration
-            return await login(username, password);
+            const data = await res.json();
+            setToken(data.token);  // Store JWT token in localStorage
+            setUser(data.user);
+            return { success: true };
         } else {
             const error = await res.json();
             return { success: false, error: error.error };
@@ -68,6 +71,7 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         await apiFetch('/api/logout', { method: 'POST' });
+        clearToken();  // Remove JWT token from localStorage
         setUser(null);
     };
 
