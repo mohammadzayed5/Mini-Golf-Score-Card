@@ -2,9 +2,16 @@ import jwt
 from datetime import datetime, timedelta
 from flask import request, jsonify
 from functools import wraps
+import os
+from dotenv import load_dotenv
 
-#Secret key for sigining tokens (same one from app.py)
-SECRET_KEY = 'minigolf-secret-key-2004'
+# Load environment variables from .env file
+load_dotenv()
+
+#Secret key for sigining tokens (loaded from environment variable)
+SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
+if not SECRET_KEY:
+    raise ValueError("JWT_SECRET_KEY environment variable is not set. Please check your .env file.")
 
 def create_token(user_id, username):
     #Create a JWT token for a user

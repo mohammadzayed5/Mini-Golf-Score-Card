@@ -2,7 +2,10 @@
 from flask import Flask
 from flask_cors import CORS
 import os
+from dotenv import load_dotenv
 
+# Load environment variables from .env file
+load_dotenv()
 
 #Import blueprint (mini-aps)
 from hello import bp as hello_bp
@@ -19,8 +22,10 @@ from auth import bp as auth_bp
 def create_app() -> Flask:
     #Build and return the Flask app
     app = Flask(__name__)
-    #Secret key for session encryption
-    app.secret_key = 'minigolf-secret-key-2004'
+    #Secret key for session encryption (loaded from environment variable)
+    app.secret_key = os.environ.get('FLASK_SECRET_KEY')
+    if not app.secret_key:
+        raise ValueError("FLASK_SECRET_KEY environment variable is not set. Please check your .env file.")
 
     #Detect if running on Render
     is_production = os.environ.get('RENDER') is not None or os.environ.get('FLASK_ENV') == 'production'
