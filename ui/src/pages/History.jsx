@@ -1,78 +1,65 @@
 //Place holder page for History tab
-import { useState } from "react";
-import { useAuth } from "../contexts/AuthContext";
-import AuthPrompt from "../components/AuthPrompt";
+import { useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../lib/api";
+import { useEffect, useState } from "react";
 
 export default function History() {
-    const { isAuthenticated } = useAuth();
-    const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+    const navigate = useNavigate();
+    const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
-    if (!isAuthenticated) {
+    useEffect(() => {
+        // Check if user is authenticated (not a guest)
+        if (!isAuthenticated()) {
+            setShowLoginPrompt(true);
+        }
+    }, []);
+
+    if (showLoginPrompt) {
         return (
-            <>
-                <main className="page">
-                    <h1 className="title">History</h1>
-                    <div style={{
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        padding: '2.5rem 2rem',
-                        borderRadius: '16px',
-                        marginTop: '2rem',
-                        textAlign: 'center',
-                        boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
-                    }}>
-                        <div style={{
-                            fontSize: '3rem',
-                            marginBottom: '1rem'
-                        }}>
-                            🔒
-                        </div>
-                        <h2 style={{
-                            margin: '0 0 0.5rem 0',
-                            fontSize: '1.5rem',
-                            fontWeight: 'bold',
-                            color: 'white'
-                        }}>
-                            Login Required
-                        </h2>
-                        <p style={{
-                            margin: '0 0 1.5rem 0',
-                            opacity: 0.95,
-                            fontSize: '1.05rem',
-                            lineHeight: '1.5'
-                        }}>
-                            Create an account to track your game history and progress over time!
-                        </p>
-                        <button
-                            onClick={() => setShowAuthPrompt(true)}
-                            style={{
-                                backgroundColor: 'white',
-                                color: '#667eea',
-                                padding: '0.875rem 2rem',
-                                border: 'none',
-                                borderRadius: '8px',
-                                fontSize: '1.05rem',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                                boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
-                                transition: 'transform 0.2s ease',
-                            }}
-                            onMouseOver={(e) => e.target.style.transform = 'scale(1.05)'}
-                            onMouseOut={(e) => e.target.style.transform = 'scale(1)'}
-                        >
-                            Sign In / Create Account
-                        </button>
-                    </div>
-                </main>
-
-                {showAuthPrompt && (
-                    <AuthPrompt
-                        onClose={() => setShowAuthPrompt(false)}
-                        redirectTo="/history"
-                    />
-                )}
-            </>
+            <main className="page">
+                <h1 className="title">History</h1>
+                <div style={{
+                    backgroundColor: '#f8d7da',
+                    color: '#721c24',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    border: '1px solid #f5c6cb',
+                    marginTop: '1rem',
+                    textAlign: 'center'
+                }}>
+                    <p style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', fontWeight: 'bold' }}>
+                        Login Required
+                    </p>
+                    <p style={{ margin: '0 0 1rem 0' }}>
+                        You must log in to track your game history and progress.
+                    </p>
+                    <button
+                        onClick={() => navigate('/login')}
+                        style={{
+                            backgroundColor: '#721c24',
+                            color: 'white',
+                            padding: '0.75rem 1.5rem',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '1rem',
+                            cursor: 'pointer',
+                            fontWeight: 'bold'
+                        }}
+                    >
+                        Go to Login
+                    </button>
+                </div>
+            </main>
         );
+    }
+    else {
+        
+
+
+
+
+
+
     }
 
     return (
