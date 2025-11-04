@@ -268,27 +268,30 @@ export default function History() {
                                     position: 'absolute',
                                     top: '12px',
                                     right: '12px',
-                                    width: '32px',
-                                    height: '32px',
+                                    width: '36px',
+                                    height: '36px',
                                     borderRadius: '8px',
-                                    border: 'none',
-                                    background: 'rgba(239, 68, 68, 0.1)',
+                                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                                    background: 'rgba(239, 68, 68, 0.25)',
                                     color: '#ef4444',
-                                    fontSize: '1.1rem',
+                                    fontSize: '1.2rem',
                                     cursor: 'pointer',
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
                                     transition: 'all 0.2s ease',
-                                    zIndex: 10
+                                    zIndex: 10,
+                                    boxShadow: '0 2px 8px rgba(239, 68, 68, 0.2)'
                                 }}
                                 onMouseOver={(e) => {
-                                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.4)';
                                     e.currentTarget.style.transform = 'scale(1.1)';
+                                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.4)';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+                                    e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)';
                                     e.currentTarget.style.transform = 'scale(1)';
+                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(239, 68, 68, 0.2)';
                                 }}
                                 title="Delete game"
                             >

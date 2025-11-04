@@ -4,14 +4,23 @@ api/__pycache__/
 api/*.pyc
 api/.env
 api/.env.*.local
+api/*.db
+api/*.sqlite
+api/*.sqlite3
 
 # Node
 ui/node_modules/
 ui/.vite/
 ui/dist/
 ui/.env
+ui/.env.local
 ui/.env.*.local
 
 # OS/editor junk
 .DS_Store
 *.log
+
+# SQLite databases (contains user data - should not be committed)
+*.db
+*.sqlite
+*.sqlite3
