@@ -30,7 +30,7 @@ export async function guestApiFetch(url, options = {}) {
             let data;
             if (((!isNaN(id) && id !== endpoint) || id === 'null')) {
                 // Single item request (e.g., /api/games/123 or /api/games/null for guest)
-                const allItems = getGuestData(endpoint);
+                const allItems = await getGuestData(endpoint);
                 if (id === 'null') {
                     // For guest games with id=null, find the first game with null id
                     data = allItems.find(item => item.id === null);
@@ -46,7 +46,7 @@ export async function guestApiFetch(url, options = {}) {
                 }
             } else {
                 // List request (e.g., /api/games)
-                data = getGuestData(url.split('/').pop());
+                data = await getGuestData(url.split('/').pop());
             }
 
             // Mock a Response object
@@ -75,7 +75,7 @@ export async function guestApiFetch(url, options = {}) {
 
                 // If playerIds are provided instead of players, convert them to player names
                 if (requestData.playerIds && requestData.playerIds.length > 0) {
-                    const guestPlayers = getGuestData('players');
+                    const guestPlayers = await getGuestData('players');
                     players = requestData.playerIds.map(id => {
                         const player = guestPlayers.find(p => p.id == id);
                         return player ? player.name : `Player ${id}`;
@@ -97,12 +97,12 @@ export async function guestApiFetch(url, options = {}) {
                 };
 
                 // Store in sessionStorage
-                const currentData = getGuestData(endpoint);
+                const currentData = await getGuestData(endpoint);
                 const newData = [...currentData, gameData];
-                setGuestData(endpoint, newData);
+                await setGuestData(endpoint, newData);
                 newItem = gameData;
             } else {
-                newItem = addGuestItem(endpoint, requestData);
+                newItem = await addGuestItem(endpoint, requestData);
             }
 
             // Mock a Response object
@@ -126,7 +126,7 @@ export async function guestApiFetch(url, options = {}) {
             const requestData = JSON.parse(options.body);
 
             // Update the game in sessionStorage
-            const games = getGuestData('games');
+            const games = await getGuestData('games');
             const gameIndex = gameId === 'null'
                 ? games.findIndex(g => g.id === null)
                 : games.findIndex(g => g.id == gameId);
@@ -138,7 +138,7 @@ export async function guestApiFetch(url, options = {}) {
                 }
                 game.scores[requestData.player][requestData.hole - 1] = requestData.score;
                 games[gameIndex] = game;
-                setGuestData('games', games);
+                await setGuestData('games', games);
             }
 
             // Mock a successful response
@@ -163,9 +163,9 @@ export async function guestApiFetch(url, options = {}) {
 
             if (!isNaN(id) && id !== endpoint) {
                 // Delete item request (e.g., /api/players/123)
-                const currentData = getGuestData(endpoint);
+                const currentData = await getGuestData(endpoint);
                 const filteredData = currentData.filter(item => item.id != id);
-                setGuestData(endpoint, filteredData);
+                await setGuestData(endpoint, filteredData);
             }
 
             // Mock a successful response

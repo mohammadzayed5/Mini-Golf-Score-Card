@@ -3,5 +3,7 @@
 	"appName": "Mini Golf Score Card",
 	"webDir": "dist",
 	"bundledWebRuntime": false,
-	"packageClassList": []
+	"packageClassList": [
+		"PreferencesPlugin"
+	]
 }

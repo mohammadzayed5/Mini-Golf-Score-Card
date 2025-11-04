@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Home Page -->
+  <url>
+    <loc>https://minigolfscoretracker.com/</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- About -->
+  <url>
+    <loc>https://minigolfscoretracker.com/about</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Help & FAQ -->
+  <url>
+    <loc>https://minigolfscoretracker.com/help</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contact -->
+  <url>
+    <loc>https://minigolfscoretracker.com/contact</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://minigolfscoretracker.com/privacy</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://minigolfscoretracker.com/terms</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Courses -->
+  <url>
+    <loc>https://minigolfscoretracker.com/courses</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Players -->
+  <url>
+    <loc>https://minigolfscoretracker.com/players</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- History -->
+  <url>
+    <loc>https://minigolfscoretracker.com/history</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+</urlset>

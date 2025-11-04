@@ -42,7 +42,7 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
             const data = await res.json();
-            setToken(data.token);  // Store JWT token in localStorage
+            await setToken(data.token);  // Store JWT token in storage
             setUser(data.user);
             return { success: true };
         } else {
@@ -60,7 +60,7 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
             const data = await res.json();
-            setToken(data.token);  // Store JWT token in localStorage
+            await setToken(data.token);  // Store JWT token in storage
             setUser(data.user);
             return { success: true };
         } else {
@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         await apiFetch('/api/logout', { method: 'POST' });
-        clearToken();  // Remove JWT token from localStorage
+        await clearToken();  // Remove JWT token from storage
         setUser(null);
     };
 

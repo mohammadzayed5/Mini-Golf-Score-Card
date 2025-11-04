@@ -1,21 +1,55 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G7MYHV2REZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-G7MYHV2REZ');
-    </script>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5108646735858325"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mini Golf Score Keeper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- Primary Meta Tags -->
+    <title>Mini Golf Score Tracker - Free Score Keeping App</title>
+    <meta name="title" content="Mini Golf Score Tracker - Free Score Keeping App" />
+    <meta name="description" content="The simplest way to track mini golf scores. Free score tracking app with live leaderboard, game history, and multi-player support. Works on web and iOS." />
+    <meta name="keywords" content="mini golf, score tracker, scorecard, golf scoring app, putt putt, mini golf app, free score keeper, golf leaderboard" />
+    <meta name="author" content="Mini Golf Score Tracker" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://minigolfscoretracker.com/" />
+    <meta property="og:title" content="Mini Golf Score Tracker - Free Score Keeping App" />
+    <meta property="og:description" content="The simplest way to track mini golf scores. Free score tracking app with live leaderboard, game history, and multi-player support." />
+    <meta property="og:site_name" content="Mini Golf Score Tracker" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://minigolfscoretracker.com/" />
+    <meta property="twitter:title" content="Mini Golf Score Tracker - Free Score Keeping App" />
+    <meta property="twitter:description" content="The simplest way to track mini golf scores. Free score tracking app with live leaderboard, game history, and multi-player support." />
+
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#14b8a6" />
+    <link rel="canonical" href="https://minigolfscoretracker.com/" />
+    <script>
+      // Only load Google Analytics/AdSense on web (not in native iOS app)
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+        // Google Analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-G7MYHV2REZ');
+
+        // Load scripts
+        const gtagScript = document.createElement('script');
+        gtagScript.async = true;
+        gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-G7MYHV2REZ';
+        document.head.appendChild(gtagScript);
+
+        const adsenseScript = document.createElement('script');
+        adsenseScript.async = true;
+        adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5108646735858325';
+        adsenseScript.crossOrigin = 'anonymous';
+        document.head.appendChild(adsenseScript);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

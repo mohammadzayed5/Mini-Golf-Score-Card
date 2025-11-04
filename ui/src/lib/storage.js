@@ -1,4 +1,5 @@
-// Utility for managing guest data in sessionStorage vs user data in database
+// Utility for managing guest data using cross-platform storage
+import { getSessionItem, setSessionItem, removeSessionItem } from './capacitorStorage';
 
 const STORAGE_KEYS = {
     courses: 'guest_courses',
@@ -6,46 +7,45 @@ const STORAGE_KEYS = {
     games: 'guest_games'
 };
 
-// Get data from sessionStorage with fallback
-export function getGuestData(type) {
+// Get data from storage with fallback
+export async function getGuestData(type) {
     try {
-        const data = sessionStorage.getItem(STORAGE_KEYS[type]);
-        return data ? JSON.parse(data) : [];
+        const data = await getSessionItem(STORAGE_KEYS[type]);
+        return data || [];
     } catch (error) {
         console.warn('Failed to load guest data:', error);
         return [];
     }
 }
 
-// Save data to sessionStorage
-export function setGuestData(type, data) {
+// Save data to storage
+export async function setGuestData(type, data) {
     try {
         console.log('Attempting to save:', type, data);
-        sessionStorage.setItem(STORAGE_KEYS[type], JSON.stringify(data));
-        const saved = sessionStorage.getItem(STORAGE_KEYS[type])
+        await setSessionItem(STORAGE_KEYS[type], data);
+        const saved = await getSessionItem(STORAGE_KEYS[type]);
         console.log('Verification - saved data:', saved);
         if(!saved) {
-            console.error('sessionStorage failed to save!')
+            console.error('Storage failed to save!')
         }
-
     } catch (error) {
         console.warn('Failed to save guest data:', error);
     }
 }
 
 // Add item to guest data
-export function addGuestItem(type, item) {
-    const currentData = getGuestData(type);
+export async function addGuestItem(type, item) {
+    const currentData = await getGuestData(type);
     const newId = Date.now() + Math.random(); // Generate unique temp ID
     const newItem = { ...item, id: newId };
     const newData = [...currentData, newItem];
-    setGuestData(type, newData);
+    await setGuestData(type, newData);
     return newItem;
 }
 
 // Clear all guest data (useful for testing)
-export function clearGuestData() {
-    Object.values(STORAGE_KEYS).forEach(key => {
-        sessionStorage.removeItem(key);
-    });
+export async function clearGuestData() {
+    await Promise.all(
+        Object.values(STORAGE_KEYS).map(key => removeSessionItem(key))
+    );
 }

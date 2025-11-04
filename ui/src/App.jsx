@@ -11,32 +11,16 @@ const History = lazy(() => import('./pages/History.jsx'))
 const Courses = lazy(() => import('./pages/Courses.jsx'))
 const PlayerSelect = lazy(() => import('./pages/playerSelect.jsx'))
 const Results = lazy(() => import('./pages/Results.jsx'))
+// Content Pages
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'))
+const TermsOfService = lazy(() => import('./pages/TermsOfService.jsx'))
+const About = lazy(() => import('./pages/About.jsx'))
+const Contact = lazy(() => import('./pages/Contact.jsx'))
+const Help = lazy(() => import('./pages/Help.jsx'))
 
 export default function App() {
   return (
-    <Suspense fallback={
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-deep)',
-        color: 'var(--mint)',
-        gap: '12px'
-      }}>
-        <div style={{
-          width: '40px',
-          height: '40px',
-          border: '3px solid rgba(124, 247, 193, 0.2)',
-          borderTop: '3px solid var(--mint)',
-          borderRadius: '50%',
-          animation: 'spin 0.8s linear infinite'
-        }} />
-        <div style={{ fontWeight: '700', fontSize: '16px' }}>Loading...</div>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-      </div>
-    }>
+    <Suspense fallback ={<div>Loading ... </div>}>
       <Routes>
             {/*All routes inside TabLayout will show the bottom Navigation Bar */}
           <Route element={<TabLayout />}>
@@ -53,6 +37,12 @@ export default function App() {
             } />
             <Route path="/courses" element={<Courses />} />
             <Route path="/playerSelect" element={<PlayerSelect />} />
+            {/* Content Pages */}
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/help" element={<Help />} />
           </Route>
           {/*Play is outside layout so the navigation bar doesn't overlay scoreboard.
             If I move this above inside of TabLayout then the bar will be visible on Play too */}

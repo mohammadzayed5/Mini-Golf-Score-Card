@@ -1,23 +1,33 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G7MYHV2REZ"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-G7MYHV2REZ');
-    </script>
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5108646735858325"
-     crossorigin="anonymous"></script>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Mini Golf Score Keeper</title>
-    <script type="module" crossorigin src="/assets/index-DaapF22A.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BLlEaGHH.css">
+    <script>
+      // Only load Google Analytics/AdSense on web (not in native iOS app)
+      if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
+        // Google Analytics
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-G7MYHV2REZ');
+
+        // Load scripts
+        const gtagScript = document.createElement('script');
+        gtagScript.async = true;
+        gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-G7MYHV2REZ';
+        document.head.appendChild(gtagScript);
+
+        const adsenseScript = document.createElement('script');
+        adsenseScript.async = true;
+        adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5108646735858325';
+        adsenseScript.crossOrigin = 'anonymous';
+        document.head.appendChild(adsenseScript);
+      }
+    </script>
+    <script type="module" crossorigin src="/assets/index-bUy7wLK5.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C0vi0AJC.css">
   </head>
   <body>
     <div id="root"></div>

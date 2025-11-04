@@ -7,4 +7,70 @@
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:srcpagesHistory.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:srcpagesHistory.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsGameHistoryCard.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsGameHistoryCard.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsLoadingSpinner.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsLoadingSpinner.css">
+   </FileRef>
+   <FileRef
+      location = "group:package.json">
+   </FileRef>
+   <FileRef
+      location = "group:capacitor.config.json">
+   </FileRef>
+   <FileRef
+      location = "group:iosAppPrivacyInfo.xcprivacy">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsGameHistoryCard 2.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsLoadingSpinner 2.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:iOS_Enhancement_Guide.md">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsAuthPrompt.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:srcpagesHistory 2.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsGameHistoryCard 2.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsLoadingSpinner 2.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccomponentsAuthPrompt.css">
+   </FileRef>
+   <FileRef
+      location = "group:srccontextsAuthContext.jsx">
+   </FileRef>
+   <FileRef
+      location = "group:AdvancedHistory.css">
+   </FileRef>
+   <FileRef
+      location = "group:enhanced-package.json">
+   </FileRef>
+   <FileRef
+      location = "group:enhanced-capacitor.config.json">
+   </FileRef>
+   <FileRef
+      location = "group:iOS_Advanced_Implementation_Guide.md">
+   </FileRef>
 </Workspace>

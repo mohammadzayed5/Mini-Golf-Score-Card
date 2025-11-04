@@ -17,6 +17,11 @@
   --mint-soft: #5fe7b1;
   --bg-deep: #0f1b19;
 
+  /* iOS Safe Area insets - automatically set by the system */
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-left: env(safe-area-inset-left, 0px);
+  --safe-area-right: env(safe-area-inset-right, 0px);
 }
 
 a {
@@ -97,16 +102,18 @@ button:focus-visible {
   height: calc(var(--navigationbar-h) + env(safe-area-inset-bottom));
   padding: 8px 10px calc(8px + env(safe-area-inset-bottom));    /* avoids overlapping iPhone home indicator */
 
-  /*dark/minty colors*/
-  background: rgba(8, 15, 14, 0.92);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(124, 247, 193, 0.16);
-  box-shadow: 0 -18px 36px rgba(0,0,0,.38);
+  /*dark/minty colors with better contrast*/
+  background: rgba(18, 31, 29, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(124, 247, 193, 0.25);
+  box-shadow: 0 -8px 32px rgba(0,0,0,.5);
 
-  /* new: centered, rounded “pill” */
-  width: min(900px, 100% - 16px);
+  /* new: centered, rounded "pill" */
+  width: min(900px, calc(100% - 32px));
   margin: 0 auto;
   border-radius: 20px 20px 14px 14px;
+  left: 50%;
+  transform: translateX(-50%);
 
   display: grid;
   grid-auto-flow: column;       /* 3 equal-width columns for 3 navigations */
@@ -164,8 +171,20 @@ button:focus-visible {
    }
 
 /* Optional helpers for page layout */
-.page { max-width: 900px; margin: 20px auto; padding: 0 16px; }
-.title { margin: 12px 0 10px; }
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  min-height: 100dvh;
+  background: var(--bg-deep);
+}
+.title {
+  margin: 12px 0 20px;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--mint);
+  padding-top: var(--safe-area-top);
+}
 
 /* IMPORTANT: If your existing CSS has:
      body { display: flex; place-items: center; ... }
