@@ -175,7 +175,7 @@ button:focus-visible {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px 16px;
-  min-height: 100dvh;
+  flex: 1;
   background: var(--bg-deep);
 }
 .title {
