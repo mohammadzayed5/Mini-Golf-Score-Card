@@ -3,7 +3,6 @@
 
 import {Outlet,} from "react-router-dom";
 import NavigationBar from "../components/NavigationBar";
-import Footer from "../components/Footer";
 
 
 export default function TabLayout() {
@@ -12,7 +11,6 @@ export default function TabLayout() {
             {/* Scrollable content area. Bottom is papdded in CSS so it never hides behind navigation bar. */}
             <div className="content">
                 <Outlet />
-                <Footer />
         </div>
         {/*Persistent bottom tabs shown on all "main" screens */}
         <NavigationBar />

@@ -37,6 +37,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--bg-deep);
 }
 
 
@@ -172,6 +173,7 @@ button:focus-visible {
 
 /* Optional helpers for page layout */
 .page {
+  min-height: 100dvh;
   max-width: 900px;
   margin: 0 auto;
   padding: 20px 16px;

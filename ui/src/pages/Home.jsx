@@ -5,6 +5,7 @@ import golfBall from "../assets/golf-ball.svg";
 import ball from "../assets/Newimage.png"
 import { useAuth } from '../contexts/AuthContext'
 import AuthPrompt from '../components/AuthPrompt'
+import Footer from '../components/Footer'
 
 
 export default function Home() {
@@ -72,6 +73,7 @@ export default function Home() {
                 />
             )}
 
+            <Footer />
         </main>
     );
 }
