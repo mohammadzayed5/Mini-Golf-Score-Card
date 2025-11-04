@@ -454,7 +454,7 @@ def create_user(username: str, password: str) -> dict:
 
         if existing_user:
             raise ValueError("Username already exists")
-    #Salt = random bytes that make each passsword hash unique
+    #Salt = random bytes that make each password hash unique
     salt = secrets.token_bytes(32) #Generate 32 random bytes
     password_hash = hashlib.pbkdf2_hmac(
         'sha256',                         #Hash algorithm
@@ -479,7 +479,7 @@ def create_user(username: str, password: str) -> dict:
         user_id = cursor.lastrowid
         #Save changes to database
         conn.commit()
-        #Return user infor (Without the password data for security)
+        #Return user info (Without the password data for security)
         return {
             "id": user_id,
             "username": clean_username,

@@ -1,7 +1,5 @@
 import {useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {apiFetch} from '../lib/api'
-import golfBall from "../assets/golf-ball.svg";
 import ball from "../assets/Newimage.png"
 import { useAuth } from '../contexts/AuthContext'
 import AuthPrompt from '../components/AuthPrompt'
@@ -11,9 +9,6 @@ import Footer from '../components/Footer'
 export default function Home() {
     //useNavigate will allow me to programmatically move to another URL
     const navigate = useNavigate()
-    //Local UI state to show loading/errors while creating a game
-    const [creating, setCreating] = useState(false)
-    const [error, setError] = useState('')
     const [showAuthPrompt, setShowAuthPrompt] = useState(false)
 
     // Auth context
@@ -56,14 +51,10 @@ export default function Home() {
             <button
                 className="cta start-round"
                 onClick={startNewGame}
-                disabled={creating}
                 aria-label="Start a new game"
             >
-                {creating ? 'Creating…' : '⛳️Start New Game🏌🏽'}
+                ⛳️Start New Game🏌🏽
             </button>
-
-            {/* Show API error if any */}
-            {error && <p className="error">{error}</p>}
 
             {/* Auth prompt when needed */}
             {showAuthPrompt && (

@@ -33,7 +33,7 @@ def _parse_players(value) -> list[str]:
 
 
 def _names_from_ids(ids) -> list[str]:
-    #Convert a list of player ids (as ints or string) insto a list of player NAMES
+    #Convert a list of player ids (as ints or string) into a list of player NAMES
     #Looks up data from players.PLAYERS
     #Build a quick lookup dict id->name from current players list.
     names, seen = [], set()

@@ -18,6 +18,7 @@ export default function History() {
         if (isAuthenticated) {
             loadGames();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated]);
 
     async function loadGames() {

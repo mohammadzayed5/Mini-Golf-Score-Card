@@ -22,7 +22,7 @@ def register_route():
     - 201: User created successfully 
     - 400: Validation error (username exists, too short, etc.)
     """
-    #Get JOSN data from request
+    #Get JSON data from request
     data = request.get_json(silent=True) or {}
     username = data.get("username", "")
     password = data.get("password", "")
