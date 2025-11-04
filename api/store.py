@@ -380,6 +380,46 @@ def delete_course(course_id: int, user_id=None) -> bool:
         conn.commit()
         return cursor.rowcount > 0
 
+def decrement_player_wins(player_name: str, user_id=None, count: int = 1) -> bool:
+    """Decrement wins for a player by name. Used when deleting games."""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        if user_id is not None:
+            cursor.execute(
+                "UPDATE players SET wins = MAX(0, wins - ?) WHERE name = ? AND (user_id = ? OR user_id IS NULL)",
+                (count, player_name, user_id)
+            )
+        else:
+            cursor.execute(
+                "UPDATE players SET wins = MAX(0, wins - ?) WHERE name = ? AND user_id IS NULL",
+                (count, player_name)
+            )
+        conn.commit()
+        return cursor.rowcount > 0
+
+def delete_game(game_id: int, user_id=None) -> bool:
+    """Delete a game by id. Returns True if deleted, False if not found."""
+    try:
+        gid = int(game_id)
+    except (TypeError, ValueError):
+        return False
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+
+        # Delete related data first (foreign key constraints)
+        cursor.execute("DELETE FROM game_players WHERE game_id = ?", (gid,))
+        cursor.execute("DELETE FROM scores WHERE game_id = ?", (gid,))
+
+        # Delete the game itself
+        if user_id is not None:
+            cursor.execute("DELETE FROM games WHERE id = ? AND (user_id = ? OR user_id IS NULL)", (gid, user_id))
+        else:
+            cursor.execute("DELETE FROM games WHERE id = ?", (gid,))
+
+        conn.commit()
+        return cursor.rowcount > 0
+
 def create_user(username: str, password: str) -> dict:
 
     """

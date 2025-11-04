@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, jsonify
-from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins
+from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins, delete_game, decrement_player_wins
 from jwt_utils import optional_token
 
 
@@ -213,3 +213,41 @@ def finish_game(current_user, game_id: int):
         "best_score": best_score,
         "final_standings": totals
     })
+
+@bp.delete("/games/<int:game_id>")
+@optional_token
+def delete_game_route(current_user, game_id: int):
+    """DELETE /api/games/<id> - Delete a game and update win counts"""
+    # Get the game first to calculate winners
+    game = get_game(game_id)
+    if not game:
+        return jsonify({"error": "Game not found"}), 404
+
+    if current_user:
+        # Calculate winners to decrement their win counts
+        totals = []
+        for player in game.get("players", []):
+            scores = game.get("scores", {}).get(player, [])
+            total = sum(score for score in scores if isinstance(score, int))
+            totals.append({"player": player, "total": total})
+
+        if totals:
+            # Sort by lowest score (mini golf)
+            totals.sort(key=lambda x: x["total"])
+            best_score = totals[0]["total"]
+            # Find all winners (handle ties)
+            winners = [t["player"] for t in totals if t["total"] == best_score]
+
+            # Decrement wins for each winner
+            user_id = current_user['user_id']
+            for winner in winners:
+                decrement_player_wins(winner, user_id)
+
+        # Delete the game
+        if delete_game(game_id, user_id):
+            return '', 204
+        else:
+            return jsonify({"error": "Failed to delete game"}), 500
+    else:
+        # Guest mode - return success (frontend handles deletion)
+        return '', 204
