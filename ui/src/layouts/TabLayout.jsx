@@ -10,7 +10,7 @@ export default function TabLayout() {
     return (
         <div className="app-shell">
             {/* Scrollable content area. Bottom is papdded in CSS so it never hides behind navigation bar. */}
-            <div className="content" style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+            <div className="content">
                 <Outlet />
                 <Footer />
         </div>
