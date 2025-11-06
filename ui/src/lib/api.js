@@ -1,6 +1,6 @@
 import { getItem, setItem, removeItem } from './capacitorStorage';
 
-export const BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://api.minigolfscoretracker.com');
+export const BASE = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '' : 'https://mini-golf-score-card.onrender.com');
 
 const AUTH_TOKEN_KEY = 'auth_token';
 
@@ -48,8 +48,8 @@ export const apiFetch = async (path, opts = {}) => {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Set timeout (default 5 seconds, can be overridden)
-    const timeout = opts.timeout || 5000;
+    // Set timeout (default 30 seconds for Render free tier wake-up, can be overridden)
+    const timeout = opts.timeout || 30000;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
