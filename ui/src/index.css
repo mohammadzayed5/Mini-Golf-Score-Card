@@ -333,8 +333,8 @@ body { display: block; }
 
 .home{
   min-height:100dvh;
-  padding: calc(env(safe-area-inset-top) + 20px) 20px 120px;
-  display:grid; justify-items:center; align-content:center; gap:24px; text-align:center;
+  padding: calc(env(safe-area-inset-top) + 60px) 20px 120px 20px;
+  display:grid; justify-items:center; align-content:start; gap:24px; text-align:center;
   background: radial-gradient(80% 40% at 50% 10%, rgba(60,120,90,.28), transparent 60%), var(--bg-deep);
   overflow: hidden;
 }
