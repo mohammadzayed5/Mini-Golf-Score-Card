@@ -3,6 +3,7 @@
 // guestApiFetch is a helper function that handles guest vs user data automatically
 import {useEffect, useState} from "react";
 import {guestApiFetch} from "../lib/guestApi";
+import AdBanner from '../components/AdBanner';
 
 export default function Players() {
     //players is an array of {id, name, wins}
@@ -157,10 +158,13 @@ export default function Players() {
                     ))}
                   </ul>
             
-                  {/* Big “Add Player” button */}
+                  {/* Big "Add Player" button */}
                   <button className="add-player" onClick={addPlayer} aria-label="Add Player">
                     <span className="plus" aria-hidden>＋</span> Add Player
                   </button>
+
+                  {/* AdMob Banner Ad - Players Page */}
+                  <AdBanner adUnitId="ca-app-pub-5108646735858325/7215223181" position="BOTTOM_CENTER" />
                 </main>
               );
             }

@@ -20,6 +20,15 @@ ui/.env.*.local
 .DS_Store
 *.log
 
+# iOS/Xcode
+ui/ios/App/Pods/
+ui/ios/App/*.xcworkspace/xcuserdata/
+ui/ios/App/*.xcodeproj/xcuserdata/
+ui/ios/App/build/
+ui/ios/App/DerivedData/
+*.xcuserstate
+*.xcuserdatad
+
 # SQLite databases (contains user data - should not be committed)
 *.db
 *.sqlite

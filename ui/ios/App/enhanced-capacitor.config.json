@@ -1,0 +1,64 @@
+{
+  "appId": "com.MohammadZayed.minigolf",
+  "appName": "Mini Golf Score Tracker",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#0a0f1c",
+    "allowsLinkPreview": false,
+    "scrollEnabled": true,
+    "webviewAnimations": true,
+    "preferences": {
+      "ScrollEnabled": true,
+      "Orientation": "portrait",
+      "KeyboardDisplayRequiresUserAction": false,
+      "SuppressesIncrementalRendering": false,
+      "GapBetweenPages": 0,
+      "PageLength": 0,
+      "PaginationBreakingMode": 0,
+      "PaginationMode": 0,
+      "BackgroundColorByName": "darkslateblue",
+      "DisallowOverscroll": true
+    }
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0a0f1c",
+      "showSpinner": true,
+      "spinnerColor": "#7cf7c1",
+      "iosSpinnerStyle": "small"
+    },
+    "StatusBar": {
+      "style": "dark",
+      "backgroundColor": "#0a0f1c",
+      "overlaysWebView": true
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "dark",
+      "resizeOnFullScreen": true
+    },
+    "Haptics": {
+      "vibrateOnTouch": true
+    },
+    "Share": {
+      "subject": "Mini Golf Score Tracker",
+      "dialogTitle": "Share your progress"
+    },
+    "Preferences": {
+      "group": "minigolf_preferences"
+    },
+    "Dialog": {
+      "iosStyle": "alert"
+    },
+    "App": {
+      "launchUrl": "",
+      "backgroundMode": "none"
+    },
+    "Device": {}
+  }
+}

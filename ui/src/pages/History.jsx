@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AuthPrompt from "../components/AuthPrompt";
 import { apiFetch } from "../lib/api";
+import AdBanner from "../components/AdBanner";
 
 export default function History() {
     const navigate = useNavigate();
@@ -27,7 +28,9 @@ export default function History() {
             setError("");
             const res = await apiFetch("/api/games");
             if (!res.ok) {
-                throw new Error("Failed to load games");
+                throw new Error("Failed to load
+                    
+                    games");
             }
             const data = await res.json();
             // Sort by created_at DESC (newest first)
@@ -553,6 +556,9 @@ export default function History() {
                     </div>
                 </div>
             )}
+
+            {/* AdMob Banner Ad - History Page */}
+            {/* <AdBanner adUnitId="ca-app-pub-5108646735858325/8100929442" position="BOTTOM_CENTER" /> */}
         </main>
     );
 }

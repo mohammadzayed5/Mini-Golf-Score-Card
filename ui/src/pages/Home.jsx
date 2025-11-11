@@ -4,6 +4,7 @@ import ball from "../assets/Newimage.png"
 import { useAuth } from '../contexts/AuthContext'
 import AuthPrompt from '../components/AuthPrompt'
 import Footer from '../components/Footer'
+import AdBanner from '../components/AdBanner'
 
 
 export default function Home() {
@@ -65,6 +66,9 @@ export default function Home() {
             )}
 
             <Footer />
+
+            {/* AdMob Banner Ad - Home Page */}
+            <AdBanner adUnitId="ca-app-pub-5108646735858325/3148534405" position="BOTTOM_CENTER" />
         </main>
     );
 }

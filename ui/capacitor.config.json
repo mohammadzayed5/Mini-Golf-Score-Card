@@ -2,5 +2,11 @@
   "appId": "com.MohammadZayed.minigolf",
   "appName": "Mini Golf Score Card",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "AdMob": {
+      "appId": "ca-app-pub-5108646735858325~1799492394",
+      "testingDevices": ["YOUR_DEVICE_ID_HERE"]
+    }
+  }
 }
