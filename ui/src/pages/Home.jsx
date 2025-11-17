@@ -38,7 +38,7 @@ export default function Home() {
                     Welcome back, {user?.username}!
                     <button
                         onClick={() => navigate('/account-settings')}
-                        style={{marginLeft: '12px', padding: '8px 16px', fontSize: '14px'}}
+                        style={{marginLeft: '12px', padding: '4px 8px', fontSize: '14px'}}
                         className="cta"
                     >
                         Settings
