@@ -540,3 +540,43 @@ def authenticate_user(username: str, password: str) -> dict | None:
             }
         else:
             return None
+
+def delete_user(user_id: int) -> bool:
+    """
+    Permanently delete a user and all their associated data.
+
+    This function will:
+    1. Delete all games created by the user
+    2. Delete all players created by the user
+    3. Delete all courses created by the user
+    4. Delete the user account itself
+
+    Args:
+        user_id: ID of the user to delete
+
+    Returns:
+        bool: True if deletion was successful, False otherwise
+    """
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+
+            # Delete all user's games (this will cascade to game_scores due to foreign key)
+            cursor.execute("DELETE FROM games WHERE user_id = ?", (user_id,))
+
+            # Delete all user's players
+            cursor.execute("DELETE FROM players WHERE user_id = ?", (user_id,))
+
+            # Delete all user's courses
+            cursor.execute("DELETE FROM courses WHERE user_id = ?", (user_id,))
+
+            # Finally, delete the user account
+            cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+
+            # Commit all the deletions
+            conn.commit()
+
+            return True
+    except Exception as e:
+        print(f"Error deleting user {user_id}: {e}")
+        return False

@@ -1,5 +1,5 @@
-from flask import Blueprint, request, jsonify 
-from store import create_user, authenticate_user
+from flask import Blueprint, request, jsonify
+from store import create_user, authenticate_user, delete_user
 from jwt_utils import create_token, decode_token, token_required
 
 # Blueprint groups related routes, it is mounted under /api in app.py
@@ -100,3 +100,27 @@ def me_route(current_user):
         "username": current_user['username'],
         "authenticated": True
     }), 200
+
+@bp.delete("/delete-account")
+@token_required
+def delete_account_route(current_user):
+    """
+    DELETE /api/delete-account
+    Permanently deletes the authenticated user's account and all associated data.
+
+    Requires JWT token in Authorization header.
+
+    Returns:
+    - 200: Account deleted successfully
+    - 500: Error deleting account
+    """
+    user_id = current_user['user_id']
+
+    try:
+        success = delete_user(user_id)
+        if success:
+            return jsonify({"message": "Account deleted successfully"}), 200
+        else:
+            return jsonify({"error": "Failed to delete account"}), 500
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500

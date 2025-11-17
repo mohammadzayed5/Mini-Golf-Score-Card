@@ -18,6 +18,7 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
 const Contact = lazy(() => import('./pages/Contact.jsx'))
 const Help = lazy(() => import('./pages/Help.jsx'))
+const AccountSettings = lazy(() => import('./pages/AccountSettings.jsx'))
 
 export default function App() {
   return (
@@ -45,6 +46,11 @@ export default function App() {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/help" element={<Help />} />
+              <Route path="/account-settings" element={
+                <ProtectedRoute redirectTo="/account-settings">
+                  <AccountSettings />
+                </ProtectedRoute>
+              } />
             </Route>
             {/*Play is outside layout so the navigation bar doesn't overlay scoreboard.
               If I move this above inside of TabLayout then the bar will be visible on Play too */}

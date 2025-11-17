@@ -28,9 +28,7 @@ export default function History() {
             setError("");
             const res = await apiFetch("/api/games");
             if (!res.ok) {
-                throw new Error("Failed to load
-                    
-                    games");
+                throw new Error("Failed to load games");
             }
             const data = await res.json();
             // Sort by created_at DESC (newest first)

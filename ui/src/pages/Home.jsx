@@ -37,6 +37,13 @@ export default function Home() {
                 <div style={{marginBottom: '16px', color: 'var(--mint)'}}>
                     Welcome back, {user?.username}!
                     <button
+                        onClick={() => navigate('/account-settings')}
+                        style={{marginLeft: '12px', padding: '8px 16px', fontSize: '14px'}}
+                        className="cta"
+                    >
+                        Settings
+                    </button>
+                    <button
                         onClick={logout}
                         style={{marginLeft: '12px', padding: '4px 8px', fontSize: '14px'}}
                         className="cta"

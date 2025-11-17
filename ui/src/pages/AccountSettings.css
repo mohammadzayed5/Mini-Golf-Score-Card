@@ -1,0 +1,206 @@
+.account-settings-container {
+    min-height: 100vh;
+    padding: 20px;
+    background: linear-gradient(135deg, #1e3a8a 0%, #10b981 100%);
+}
+
+.account-settings-content {
+    max-width: 600px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.account-settings-content h1 {
+    color: #1e3a8a;
+    margin-bottom: 24px;
+    font-size: 28px;
+}
+
+.account-info {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.account-info h2 {
+    color: #374151;
+    font-size: 20px;
+    margin-bottom: 16px;
+}
+
+.info-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.info-label {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.info-value {
+    color: #1f2937;
+}
+
+.danger-zone {
+    background-color: #fef2f2;
+    border: 2px solid #fecaca;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.danger-zone h2 {
+    color: #dc2626;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.warning-text {
+    color: #991b1b;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.delete-button {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover:not(:disabled) {
+    background-color: #b91c1c;
+}
+
+.delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.confirmation-box {
+    background-color: white;
+    border: 2px solid #dc2626;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.confirmation-text {
+    color: #dc2626;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.confirm-delete-button {
+    background-color: #dc2626;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex: 1;
+    min-width: 150px;
+}
+
+.confirm-delete-button:hover:not(:disabled) {
+    background-color: #b91c1c;
+}
+
+.confirm-delete-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    background-color: #6b7280;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex: 1;
+    min-width: 120px;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #4b5563;
+}
+
+.cancel-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.error-message {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: #991b1b;
+    font-size: 14px;
+}
+
+/* iPad optimizations */
+@media (min-width: 768px) {
+    .account-settings-content {
+        padding: 32px;
+    }
+
+    .account-settings-content h1 {
+        font-size: 32px;
+    }
+
+    .account-info h2,
+    .danger-zone h2 {
+        font-size: 24px;
+    }
+
+    .info-item {
+        font-size: 18px;
+    }
+
+    .warning-text {
+        font-size: 16px;
+    }
+
+    .delete-button {
+        padding: 14px 28px;
+        font-size: 18px;
+    }
+
+    .confirm-delete-button,
+    .cancel-button {
+        padding: 12px 24px;
+        font-size: 16px;
+        min-height: 48px;
+    }
+
+    .confirmation-text {
+        font-size: 16px;
+    }
+
+    .error-message {
+        font-size: 16px;
+    }
+}

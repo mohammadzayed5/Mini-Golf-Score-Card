@@ -985,3 +985,56 @@ body { display: block; }
 .hero-ball-wrap::after {
   content: none !important;
 }
+
+/* === iPad optimizations === */
+@media (min-width: 768px) {
+  /* Auth modal - larger on iPad */
+  .auth-modal {
+    max-width: 550px;
+    padding: 16px;
+  }
+
+  .auth-prompt-content h2,
+  .auth-form-content h2 {
+    font-size: 32px;
+  }
+
+  .auth-prompt-content p,
+  .auth-form-content p {
+    font-size: 18px;
+  }
+
+  /* Larger buttons for better iPad touch targets */
+  .auth-options button,
+  .auth-form-content form button.cta {
+    padding: 16px 24px;
+    font-size: 18px;
+    min-height: 56px;
+  }
+
+  /* Larger form inputs */
+  .form-group input {
+    padding: 16px;
+    font-size: 18px;
+    min-height: 56px;
+  }
+
+  .form-group label {
+    font-size: 16px;
+  }
+
+  /* Error messages */
+  .error-message {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  /* Auth switch text */
+  .auth-switch p {
+    font-size: 16px;
+  }
+
+  .link-btn {
+    font-size: 16px;
+  }
+}

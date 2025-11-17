@@ -75,12 +75,32 @@ export function AuthProvider({ children }) {
         setUser(null);
     };
 
+    const deleteAccount = async () => {
+        try {
+            const res = await apiFetch('/api/delete-account', {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                await clearToken();
+                setUser(null);
+                return { success: true };
+            } else {
+                const error = await res.json();
+                return { success: false, error: error.error || 'Failed to delete account' };
+            }
+        } catch (error) {
+            return { success: false, error: 'Network error' };
+        }
+    };
+
     const value = {
         user,
         loading,
         login,
         register,
         logout,
+        deleteAccount,
         isAuthenticated: !!user
     };
     console.log(`Auth state:`, {
