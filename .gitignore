@@ -36,6 +36,3 @@ ui/ios/App/DerivedData/
 *.sqlite
 *.sqlite3
 .venv/
-
-# Documentation with sensitive info
-KNOWLEDGE_TRANSFER_DOCUMENT.md
