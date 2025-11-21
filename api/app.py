@@ -1,5 +1,5 @@
 
-from flask import Flask
+from flask import Flask, Response
 from flask_cors import CORS
 import os
 from dotenv import load_dotenv
@@ -42,6 +42,11 @@ def create_app() -> Flask:
     app.register_blueprint(courses_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api")
 
+    # Serve app-ads.txt for AdMob verification
+    @app.route('/app-ads.txt')
+    def app_ads():
+        content = "google.com, pub-5108646735858325, DIRECT, f08c47fec0942fa0"
+        return Response(content, mimetype='text/plain')
 
     #This enables Flask CORS for all /api/* routes so Iphone can call api
     CORS(app, resources={r"/api/*": {"origins": ["https://minigolfscoretracker.com", "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174", "capacitor://localhost", "ionic://localhost", "http://localhost"], "supports_credentials":True}})
