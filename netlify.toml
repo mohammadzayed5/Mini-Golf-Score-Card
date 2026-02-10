@@ -1,0 +1,12 @@
+# Build configuration for both UI and AppView
+[build]
+  command = "cd ui && npm install && npm run build && cd ../app-view && npm install && npm run build && cp -r out/* ../ui/dist/app/"
+  publish = "ui/dist"
+
+# Redirect rules - exclude /app from SPA redirects
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+  conditions = {path = ["!/app", "!/app/*"]}
