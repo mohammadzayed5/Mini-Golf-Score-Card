@@ -36,3 +36,4 @@ ui/ios/App/DerivedData/
 *.sqlite
 *.sqlite3
 .venv/
+.venv/

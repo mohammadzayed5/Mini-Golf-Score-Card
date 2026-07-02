@@ -44,7 +44,7 @@ def create_game(name: str, holes: int, players=None, user_id=None) -> dict:
         return get_game(game_id)
 
 def list_games(user_id=None) -> list[dict]:
-    """Return all games (newest last for now)"""
+    """Return all games (newest last for now). Uses 3 queries total instead of 2N+1."""
     with get_db() as conn:
         cursor = conn.cursor()
         if user_id is not None:
@@ -56,35 +56,43 @@ def list_games(user_id=None) -> list[dict]:
             cursor.execute("SELECT * FROM games ORDER BY created_at")
 
         games = dicts_from_rows(cursor.fetchall())
+        if not games:
+            return games
 
-        # Add players and scores to each game
+        game_ids = [g['id'] for g in games]
+        placeholders = ",".join("?" for _ in game_ids)
+
+        # Fetch all players for these games in one query
+        cursor.execute(
+            f"SELECT game_id, player_name FROM game_players WHERE game_id IN ({placeholders}) ORDER BY game_id, position",
+            game_ids,
+        )
+        players_by_game: dict[int, list[str]] = {gid: [] for gid in game_ids}
+        for gid, name in cursor.fetchall():
+            players_by_game[gid].append(name)
+
+        # Fetch all scores for these games in one query
+        cursor.execute(
+            f"SELECT game_id, player_name, hole_number, score FROM scores WHERE game_id IN ({placeholders})",
+            game_ids,
+        )
+        scores_rows = cursor.fetchall()
+
+        games_by_id: dict[int, dict] = {}
         for game in games:
-            game_id = game['id']
+            gid = game['id']
+            players = players_by_game.get(gid, [])
+            game['players'] = players
+            game['scores'] = {p: [None] * game['holes'] for p in players}
+            games_by_id[gid] = game
 
-            # Get players
-            cursor.execute(
-                "SELECT player_name FROM game_players WHERE game_id = ? ORDER BY position",
-                (game_id,)
-            )
-            game['players'] = [row[0] for row in cursor.fetchall()]
-
-            # Get scores
-            cursor.execute(
-                "SELECT player_name, hole_number, score FROM scores WHERE game_id = ? ORDER BY player_name, hole_number",
-                (game_id,)
-            )
-            scores_data = cursor.fetchall()
-
-            # Rebuild scores dict
-            scores = {}
-            for player in game['players']:
-                scores[player] = [None] * game['holes']
-
-            for player_name, hole_number, score in scores_data:
-                if player_name in scores and 0 <= hole_number < game['holes']:
-                    scores[player_name][hole_number] = score
-
-            game['scores'] = scores
+        for gid, player_name, hole_number, score in scores_rows:
+            game = games_by_id.get(gid)
+            if game is None:
+                continue
+            game_scores = game['scores']
+            if player_name in game_scores and 0 <= hole_number < game['holes']:
+                game_scores[player_name][hole_number] = score
 
         return games
 

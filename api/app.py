@@ -42,6 +42,11 @@ def create_app() -> Flask:
     app.register_blueprint(courses_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api")
 
+    # Cheap health check for uptime pings (keeps Render free tier warm).
+    @app.route('/api/health')
+    def health():
+        return {"ok": True}, 200
+
     # Serve app-ads.txt for AdMob verification
     @app.route('/app-ads.txt')
     def app_ads():

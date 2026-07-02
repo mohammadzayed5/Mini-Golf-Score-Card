@@ -80,6 +80,14 @@ def init_db():
             )
         """)
 
+        # Indexes on the FK columns we actually filter/join on. Small tables today,
+        # but this is a free win as the DB grows.
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_games_user_id ON games(user_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_game_players_game_id ON game_players(game_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_scores_game_id ON scores(game_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_players_user_id ON players(user_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_courses_user_id ON courses(user_id)")
+
         conn.commit()
 
 @contextmanager
