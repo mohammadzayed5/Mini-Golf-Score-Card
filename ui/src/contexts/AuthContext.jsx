@@ -1,37 +1,44 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { apiFetch, setToken, clearToken } from '../lib/api';
+import { getItem, setItem, removeItem } from '../lib/capacitorStorage';
 
 const AuthContext = createContext();
+
+const CACHED_USER_KEY = 'cached_user';
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check if user is logged in on app start
     useEffect(() => {
-        checkAuth();
-    }, []);
+        let cancelled = false;
 
-    const checkAuth = async () => {
-        console.log(`Checking authentication...`);
-        try {
-            const res = await apiFetch('/api/me');
-            console.log(`/api/me response: `, res.status, res.ok);
-            if (res.ok) {
-                const userData = await res.json();
-                console.log(`User Authenticated:`, userData);
-                setUser(userData);
-            } else {
-                console.log(`authentication failed status:`, res.status);
-                setUser(null);
+        (async () => {
+            const cachedUser = await getItem(CACHED_USER_KEY);
+            if (!cancelled && cachedUser) {
+                setUser(cachedUser);
             }
-        } catch (error) {
-            console.log(`Authentication error:`, error);
-            setUser(null);
-        } finally {
             setLoading(false);
-        }
-    };
+
+            try {
+                const res = await apiFetch('/api/me', { timeout: 8000 });
+                if (cancelled) return;
+                if (res.ok) {
+                    const userData = await res.json();
+                    setUser(userData);
+                    await setItem(CACHED_USER_KEY, userData);
+                } else if (res.status === 401) {
+                    setUser(null);
+                    await clearToken();
+                    await removeItem(CACHED_USER_KEY);
+                }
+            } catch {
+                // Network error / timeout — keep optimistic cached user, let calls retry later.
+            }
+        })();
+
+        return () => { cancelled = true; };
+    }, []);
 
     const login = async (username, password) => {
         const res = await apiFetch('/api/login', {
@@ -42,7 +49,8 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
             const data = await res.json();
-            await setToken(data.token);  // Store JWT token in storage
+            await setToken(data.token);
+            await setItem(CACHED_USER_KEY, data.user);
             setUser(data.user);
             return { success: true };
         } else {
@@ -60,7 +68,8 @@ export function AuthProvider({ children }) {
 
         if (res.ok) {
             const data = await res.json();
-            await setToken(data.token);  // Store JWT token in storage
+            await setToken(data.token);
+            await setItem(CACHED_USER_KEY, data.user);
             setUser(data.user);
             return { success: true };
         } else {
@@ -71,25 +80,24 @@ export function AuthProvider({ children }) {
 
     const logout = async () => {
         await apiFetch('/api/logout', { method: 'POST' });
-        await clearToken();  // Remove JWT token from storage
+        await clearToken();
+        await removeItem(CACHED_USER_KEY);
         setUser(null);
     };
 
     const deleteAccount = async () => {
         try {
-            const res = await apiFetch('/api/delete-account', {
-                method: 'DELETE'
-            });
-
+            const res = await apiFetch('/api/delete-account', { method: 'DELETE' });
             if (res.ok) {
                 await clearToken();
+                await removeItem(CACHED_USER_KEY);
                 setUser(null);
                 return { success: true };
             } else {
                 const error = await res.json();
                 return { success: false, error: error.error || 'Failed to delete account' };
             }
-        } catch (error) {
+        } catch {
             return { success: false, error: 'Network error' };
         }
     };
@@ -103,11 +111,6 @@ export function AuthProvider({ children }) {
         deleteAccount,
         isAuthenticated: !!user
     };
-    console.log(`Auth state:`, {
-        isAuthenticated: !!user,
-        user: user?.username,
-        loading
-    });
 
     return (
         <AuthContext.Provider value={value}>

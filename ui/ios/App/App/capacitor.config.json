@@ -9,10 +9,21 @@
 			"testingDevices": [
 				"YOUR_DEVICE_ID_HERE"
 			]
+		},
+		"SplashScreen": {
+			"launchShowDuration": 800,
+			"launchAutoHide": true,
+			"backgroundColor": "#ffffff",
+			"androidSplashResourceName": "splash",
+			"iosSpinnerStyle": "small",
+			"showSpinner": false,
+			"splashFullScreen": true,
+			"splashImmersive": true
 		}
 	},
 	"packageClassList": [
 		"AdMobPlugin",
-		"PreferencesPlugin"
+		"PreferencesPlugin",
+		"SplashScreenPlugin"
 	]
 }

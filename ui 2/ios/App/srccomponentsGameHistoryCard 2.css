@@ -1,0 +1,228 @@
+/* Game History Card Styles - iOS Design */
+
+.game-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.game-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(124, 247, 193, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.game-card:hover::before {
+  opacity: 1;
+}
+
+.game-card:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.game-card.winner-card {
+  border-color: #7cf7c1;
+  background: rgba(124, 247, 193, 0.1);
+  box-shadow: 0 0 20px rgba(124, 247, 193, 0.2);
+}
+
+.game-card.winner-card::before {
+  background: linear-gradient(135deg, rgba(124, 247, 193, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+  opacity: 1;
+}
+
+/* Game Header */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.course-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  color: white;
+  flex: 1;
+  margin-right: 1rem;
+}
+
+.game-date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Game Stats */
+.game-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #7cf7c1;
+}
+
+/* Winner Badge */
+.winner-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(124, 247, 193, 0.2);
+  border: 1px solid #7cf7c1;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #7cf7c1;
+}
+
+.trophy-icon {
+  font-size: 1rem;
+}
+
+/* Card Arrow */
+.card-arrow {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: #64748b;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.game-card:hover .card-arrow {
+  transform: translateY(-50%) translateX(2px);
+  color: #7cf7c1;
+  opacity: 1;
+}
+
+/* Loading state for cards */
+.game-card.loading {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: cardShimmer 1.5s infinite;
+}
+
+@keyframes cardShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .game-card {
+    padding: 1.25rem;
+    border-radius: 16px;
+  }
+  
+  .game-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .course-name {
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+  
+  .game-date {
+    align-self: flex-start;
+  }
+  
+  .game-stats {
+    gap: 0.75rem;
+  }
+  
+  .stat {
+    padding: 0.5rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  .card-arrow {
+    right: 0.75rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .game-card,
+  .stat,
+  .card-arrow,
+  .game-card::before {
+    transition: none;
+  }
+  
+  .game-card.loading {
+    animation: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .game-card {
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .game-card.winner-card {
+    border-color: #7cf7c1;
+    border-width: 3px;
+  }
+  
+  .stat-value {
+    color: white;
+  }
+}

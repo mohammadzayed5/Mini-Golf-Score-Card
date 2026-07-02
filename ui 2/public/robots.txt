@@ -1,0 +1,14 @@
+# robots.txt for Mini Golf Score Tracker
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://minigolfscoretracker.com/sitemap.xml
+
+# Google AdSense bot
+User-agent: Mediapartners-Google
+Allow: /
+
+# Block access to API endpoints (backend only, not static content)
+Disallow: /api/

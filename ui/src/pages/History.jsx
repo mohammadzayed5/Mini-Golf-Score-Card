@@ -1,9 +1,41 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AuthPrompt from "../components/AuthPrompt";
 import { apiFetch } from "../lib/api";
 import AdBanner from "../components/AdBanner";
+
+function calculateWinner(game) {
+    if (!game.players || game.players.length === 0) return null;
+
+    const totals = game.players.map(player => {
+        const scores = game.scores?.[player] || [];
+        const total = scores.reduce((sum, score) => sum + (score || 0), 0);
+        return { player, total };
+    });
+
+    totals.sort((a, b) => a.total - b.total);
+    const bestScore = totals[0].total;
+    const winners = totals.filter(t => t.total === bestScore);
+    return { winners, totals };
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays} days ago`;
+
+    return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+    });
+}
 
 export default function History() {
     const navigate = useNavigate();
@@ -44,38 +76,12 @@ export default function History() {
         }
     }
 
-    function calculateWinner(game) {
-        if (!game.players || game.players.length === 0) return null;
-
-        const totals = game.players.map(player => {
-            const scores = game.scores?.[player] || [];
-            const total = scores.reduce((sum, score) => sum + (score || 0), 0);
-            return { player, total };
-        });
-
-        totals.sort((a, b) => a.total - b.total);
-        const bestScore = totals[0].total;
-        const winners = totals.filter(t => t.total === bestScore);
-
-        return { winners, totals };
-    }
-
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) return "Today";
-        if (diffDays === 1) return "Yesterday";
-        if (diffDays < 7) return `${diffDays} days ago`;
-
-        return date.toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
-        });
-    }
+    // Pre-compute winner/totals for each game once per games change. Avoids
+    // recomputing on every render pass (e.g. when the delete modal opens).
+    const gamesWithResults = useMemo(
+        () => games.map(g => ({ game: g, result: calculateWinner(g) })),
+        [games]
+    );
 
     async function handleDeleteGame(gameId) {
         try {
@@ -242,8 +248,7 @@ export default function History() {
             </div>
 
             <div style={{ display: 'grid', gap: '1rem' }}>
-                {games.map((game) => {
-                    const result = calculateWinner(game);
+                {gamesWithResults.map(({ game, result }) => {
                     const winners = result?.winners || [];
                     const totals = result?.totals || [];
 

@@ -1,0 +1,341 @@
+/* History.css - iOS-optimized styling for History page */
+
+.history-page {
+  padding-top: max(env(safe-area-inset-top), 1rem);
+  padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+  color: white;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #7cf7c1 0%, #14b8a6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.share-button {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 0.75rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.share-button:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Auth prompt card with glass effect */
+.auth-prompt-card {
+  margin: 2rem 0;
+  background: linear-gradient(135deg, rgba(124, 247, 193, 0.9) 0%, rgba(20, 184, 166, 0.9) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-prompt-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.auth-prompt-content {
+  position: relative;
+  z-index: 1;
+}
+
+.lock-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.auth-prompt-card h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.auth-prompt-card p {
+  margin: 0 0 2rem 0;
+  opacity: 0.95;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: white;
+}
+
+.auth-features {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  min-width: 80px;
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+}
+
+.feature-item span:last-child {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Glass button effect */
+.glass-button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #14b8a6;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 25px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.6);
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-button:active {
+  transform: scale(0.95);
+  box-shadow: 
+    0 4px 15px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+/* Stats summary */
+.stats-summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  flex: 1;
+  max-width: 150px;
+}
+
+.stat-number {
+  display: block;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #7cf7c1;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Pull to refresh */
+.pull-to-refresh {
+  text-align: center;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.pull-to-refresh:active {
+  transform: scale(0.95);
+}
+
+.refresh-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(124, 247, 193, 0.3);
+  border-top: 2px solid #7cf7c1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.refresh-text {
+  font-size: 0.9rem;
+}
+
+/* History list */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.empty-icon {
+  font-size: 5rem;
+  margin-bottom: 2rem;
+  display: block;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  margin: 0 0 1rem 0;
+  color: white;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  margin: 0 0 2rem 0;
+  line-height: 1.5;
+}
+
+.primary-button {
+  background: linear-gradient(135deg, #7cf7c1 0%, #14b8a6 100%);
+  color: #0f172a;
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(20, 184, 166, 0.4);
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 10px rgba(20, 184, 166, 0.6);
+}
+
+/* Spinning animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .history-page {
+    background: linear-gradient(180deg, #000000 0%, #0f172a 100%);
+  }
+}
+
+/* iPhone notch and home indicator support */
+@supports (padding: max(0px)) {
+  .history-page {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+  }
+  
+  .auth-features {
+    gap: 1rem;
+  }
+  
+  .feature-item {
+    min-width: 70px;
+    padding: 0.75rem;
+  }
+  
+  .stats-summary {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .stat-card {
+    max-width: 200px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .auth-prompt-card {
+    border: 2px solid white;
+  }
+  
+  .stat-card, .share-button {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .glass-button,
+  .primary-button,
+  .share-button,
+  .pull-to-refresh {
+    transition: none;
+  }
+  
+  .refresh-spinner {
+    animation: none;
+  }
+}

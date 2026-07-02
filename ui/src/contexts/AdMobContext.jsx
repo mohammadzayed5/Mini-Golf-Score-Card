@@ -23,30 +23,29 @@ export const AdMobProvider = ({ children }) => {
 
     const initializeAdMob = async () => {
       try {
-        // Delay initialization by 5 seconds to let app fully load
-        await new Promise(resolve => setTimeout(resolve, 5000));
-
+        const { AdMob } = await import('@capacitor-community/admob');
         if (!isMounted) return;
 
-        const { AdMob } = await import('@capacitor-community/admob');
-
-        console.log('AdMob: Initializing...');
+        // Init without the tracking prompt so it doesn't block first paint.
         await AdMob.initialize({
-          requestTrackingAuthorization: true,
+          requestTrackingAuthorization: false,
           initializeForTesting: false,
         });
+        if (!isMounted) return;
+        setIsInitialized(true);
 
-        if (isMounted) {
-          console.log('AdMob: Initialized successfully');
-          setIsInitialized(true);
-        }
+        // Ask for tracking authorization after the UI is up. Failure is non-fatal.
+        try {
+          await AdMob.requestTrackingAuthorization();
+        } catch {}
       } catch (error) {
         console.error('AdMob: Initialization failed:', error);
-        // Don't crash the app if AdMob fails
       }
     };
 
-    initializeAdMob();
+    // Defer to the next idle callback so we never block first paint.
+    const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 0));
+    schedule(initializeAdMob);
 
     return () => {
       isMounted = false;

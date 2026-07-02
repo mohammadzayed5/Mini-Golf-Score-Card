@@ -48,14 +48,18 @@ export const apiFetch = async (path, opts = {}) => {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Set timeout (default 30 seconds for Render free tier wake-up, can be overridden)
-    const timeout = opts.timeout || 30000;
+    // Default 15s (Render cold-start upper bound). Callers can pass a shorter
+    // timeout for latency-sensitive requests (e.g. background auth check).
+    const timeout = opts.timeout || 15000;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
+    // Strip `timeout` from the fetch init so it doesn't hit the underlying fetch.
+    const { timeout: _t, ...fetchOpts } = opts;
+
     try {
         const response = await fetch(`${BASE}${path}`, {
-            ...opts,
+            ...fetchOpts,
             headers,
             credentials: 'include',
             signal: controller.signal
@@ -64,9 +68,6 @@ export const apiFetch = async (path, opts = {}) => {
         return response;
     } catch (error) {
         clearTimeout(timeoutId);
-        if (error.name === 'AbortError') {
-            console.warn(`API request to ${path} timed out after ${timeout}ms`);
-        }
         throw error;
     }
 };

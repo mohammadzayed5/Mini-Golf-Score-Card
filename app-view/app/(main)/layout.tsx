@@ -53,6 +53,14 @@ export const metadata: Metadata = {
     description: "Track mini golf scores with friends and family. Create custom courses, add unlimited players, and celebrate winners!",
     images: ["/og-preview.png"],
   },
+
+  // Google Search Console verification. Get the token from
+  // https://search.google.com/search-console (URL-prefix property) and replace
+  // "REPLACE_WITH_GSC_TOKEN" below. Next.js renders this as
+  // <meta name="google-site-verification" content="...">.
+  verification: {
+    google: "REPLACE_WITH_GSC_TOKEN",
+  },
 };
 
 export const viewport: Viewport = {
