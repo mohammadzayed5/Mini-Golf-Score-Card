@@ -49,13 +49,13 @@ def list_games(user_id=None) -> list[dict]:
         cursor = conn.cursor()
         if user_id is not None:
             cursor.execute(
-                "SELECT * FROM games WHERE user_id = ? OR user_id IS NULL ORDER BY created_at",
+                "SELECT * FROM games WHERE user_id = ? ORDER BY created_at",
                 (user_id,)
             )
         else:
             cursor.execute("SELECT * FROM games ORDER BY created_at")
 
-        games = dicts_from_rows(cursor.fetchall())
+        games = dicts_from_rows(cursor, cursor.fetchall())
         if not games:
             return games
 
@@ -96,18 +96,25 @@ def list_games(user_id=None) -> list[dict]:
 
         return games
 
-def get_game(game_id: int) -> dict | None:
-    """Find a single game by id. Return None if missing"""
+def get_game(game_id: int, user_id=None) -> dict | None:
+    """Find a single game by id. Return None if missing.
+
+    When user_id is given, only return the game if that user owns it —
+    callers handling authenticated requests MUST pass user_id.
+    """
     with get_db() as conn:
         cursor = conn.cursor()
 
         # Get game
-        cursor.execute("SELECT * FROM games WHERE id = ?", (game_id,))
+        if user_id is not None:
+            cursor.execute("SELECT * FROM games WHERE id = ? AND user_id = ?", (game_id, user_id))
+        else:
+            cursor.execute("SELECT * FROM games WHERE id = ?", (game_id,))
         game_row = cursor.fetchone()
         if not game_row:
             return None
 
-        game = dict_from_row(game_row)
+        game = dict_from_row(cursor, game_row)
 
         # Get players
         cursor.execute(
@@ -135,9 +142,12 @@ def get_game(game_id: int) -> dict | None:
         game['scores'] = scores
         return game
 
-def update_game(game_id: int, *, name=None, holes=None, players=None) -> dict | None:
-    """Update game fields. Handles resizing scores when holes/players change."""
-    game = get_game(game_id)
+def update_game(game_id: int, *, name=None, holes=None, players=None, user_id=None) -> dict | None:
+    """Update game fields. Handles resizing scores when holes/players change.
+
+    When user_id is given, only the owner's game can be updated.
+    """
+    game = get_game(game_id, user_id)
     if not game:
         return None
 
@@ -199,7 +209,7 @@ def update_game(game_id: int, *, name=None, holes=None, players=None) -> dict | 
                     )
 
         conn.commit()
-        return get_game(game_id)
+        return get_game(game_id, user_id)
 
 
 def create_player(name: str, *, wins: int = 0, user_id=None) -> dict:
@@ -225,13 +235,13 @@ def list_players(user_id=None) -> list[dict]:
         cursor = conn.cursor()
         if user_id is not None:
             cursor.execute(
-                "SELECT * FROM players WHERE user_id = ? OR user_id IS NULL ORDER BY created_at",
+                "SELECT * FROM players WHERE user_id = ? ORDER BY created_at",
                 (user_id,)
             )
         else:
             cursor.execute("SELECT * FROM players ORDER BY created_at")
 
-        return dicts_from_rows(cursor.fetchall())
+        return dicts_from_rows(cursor, cursor.fetchall())
 
 def get_player(player_id: int) -> dict | None:
     """Return a single player by id, or None."""
@@ -244,7 +254,7 @@ def get_player(player_id: int) -> dict | None:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM players WHERE id = ?", (pid,))
         row = cursor.fetchone()
-        return dict_from_row(row)
+        return dict_from_row(cursor, row)
     
 def update_player_wins(player_name: str, user_id=None) -> bool:
     #increment wins for a player by their name
@@ -253,8 +263,7 @@ def update_player_wins(player_name: str, user_id=None) -> bool:
         #Try to find the existing player
         if user_id is not None:
             cursor.execute(
-                "UPDATE players SET wins = wins + 1 WHERE name = ? AND (user_id = ? OR user_id IS NULL)",
-
+                "UPDATE players SET wins = wins + 1 WHERE name = ? AND user_id = ?",
                 (player_name, user_id)
             )
         else:
@@ -273,14 +282,21 @@ def update_player_wins(player_name: str, user_id=None) -> bool:
             )
             conn.commit()
             return True
-        except sqlite3.IntegrityError:
-            #Handle race condition if player was created between UPDATE and INSERT
-            return False
+        except Exception as e:
+            #Handle race condition if player was created between UPDATE and INSERT.
+            #sqlite3 raises IntegrityError; libsql surfaces constraint violations
+            #as its own error type, so match on the message as well.
+            if isinstance(e, sqlite3.IntegrityError) or "constraint" in str(e).lower():
+                return False
+            raise
 
 
-def set_score(game_id: int, player: str, hole_index: int, score) -> dict | None:
-    """Set score (or None) for player at hole_index (0-based)."""
-    game = get_game(game_id)
+def set_score(game_id: int, player: str, hole_index: int, score, user_id=None) -> dict | None:
+    """Set score (or None) for player at hole_index (0-based).
+
+    When user_id is given, only the owner's game can be scored.
+    """
+    game = get_game(game_id, user_id)
     if not game:
         return None
 
@@ -306,7 +322,7 @@ def set_score(game_id: int, player: str, hole_index: int, score) -> dict | None:
         )
         conn.commit()
 
-    return get_game(game_id)
+    return get_game(game_id, user_id)
 
 
 def create_course(name: str, holes: int, user_id=None) -> dict:
@@ -331,13 +347,13 @@ def list_courses(user_id=None) -> list[dict]:
         cursor = conn.cursor()
         if user_id is not None:
             cursor.execute(
-                "SELECT * FROM courses WHERE user_id = ? OR user_id IS NULL ORDER BY created_at",
+                "SELECT * FROM courses WHERE user_id = ? ORDER BY created_at",
                 (user_id,)
             )
         else:
             cursor.execute("SELECT * FROM courses ORDER BY created_at")
 
-        return dicts_from_rows(cursor.fetchall())
+        return dicts_from_rows(cursor, cursor.fetchall())
 
 def get_course(course_id: int) -> dict | None:
     """Return a single course by id, or None."""
@@ -350,7 +366,7 @@ def get_course(course_id: int) -> dict | None:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM courses WHERE id = ?", (cid,))
         row = cursor.fetchone()
-        return dict_from_row(row)
+        return dict_from_row(cursor, row)
 
 def delete_player(player_id: int, user_id=None) -> bool:
     """Delete a player by id. Returns True if deleted, False if not found."""
@@ -362,9 +378,7 @@ def delete_player(player_id: int, user_id=None) -> bool:
     with get_db() as conn:
         cursor = conn.cursor()
         if user_id is not None:
-            # Delete if the player belongs to the user OR if it's a guest player (user_id is None)
-            # This allows cleaning up guest data when logged in
-            cursor.execute("DELETE FROM players WHERE id = ? AND (user_id = ? OR user_id IS NULL)", (pid, user_id))
+            cursor.execute("DELETE FROM players WHERE id = ? AND user_id = ?", (pid, user_id))
         else:
             cursor.execute("DELETE FROM players WHERE id = ?", (pid,))
         conn.commit()
@@ -380,9 +394,7 @@ def delete_course(course_id: int, user_id=None) -> bool:
     with get_db() as conn:
         cursor = conn.cursor()
         if user_id is not None:
-            # Delete if the course belongs to the user OR if it's a guest course (user_id is None)
-            # This allows cleaning up guest data when logged in
-            cursor.execute("DELETE FROM courses WHERE id = ? AND (user_id = ? OR user_id IS NULL)", (cid, user_id))
+            cursor.execute("DELETE FROM courses WHERE id = ? AND user_id = ?", (cid, user_id))
         else:
             cursor.execute("DELETE FROM courses WHERE id = ?", (cid,))
         conn.commit()
@@ -394,7 +406,7 @@ def decrement_player_wins(player_name: str, user_id=None, count: int = 1) -> boo
         cursor = conn.cursor()
         if user_id is not None:
             cursor.execute(
-                "UPDATE players SET wins = MAX(0, wins - ?) WHERE name = ? AND (user_id = ? OR user_id IS NULL)",
+                "UPDATE players SET wins = MAX(0, wins - ?) WHERE name = ? AND user_id = ?",
                 (count, player_name, user_id)
             )
         else:
@@ -415,18 +427,23 @@ def delete_game(game_id: int, user_id=None) -> bool:
     with get_db() as conn:
         cursor = conn.cursor()
 
+        # Verify the game exists (and belongs to the user) BEFORE deleting anything.
+        # This is also required for correctness on libsql, where cursor.rowcount is
+        # cumulative per connection, so checking it after multiple DELETEs lies.
+        if user_id is not None:
+            cursor.execute("SELECT id FROM games WHERE id = ? AND user_id = ?", (gid, user_id))
+        else:
+            cursor.execute("SELECT id FROM games WHERE id = ?", (gid,))
+        if cursor.fetchone() is None:
+            return False
+
         # Delete related data first (foreign key constraints)
         cursor.execute("DELETE FROM game_players WHERE game_id = ?", (gid,))
         cursor.execute("DELETE FROM scores WHERE game_id = ?", (gid,))
-
-        # Delete the game itself
-        if user_id is not None:
-            cursor.execute("DELETE FROM games WHERE id = ? AND (user_id = ? OR user_id IS NULL)", (gid, user_id))
-        else:
-            cursor.execute("DELETE FROM games WHERE id = ?", (gid,))
+        cursor.execute("DELETE FROM games WHERE id = ?", (gid,))
 
         conn.commit()
-        return cursor.rowcount > 0
+        return True
 
 def create_user(username: str, password: str) -> dict:
 

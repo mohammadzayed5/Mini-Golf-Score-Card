@@ -117,8 +117,11 @@ def get_games(current_user):
 @bp.get("/games/<int:game_id>")
 @optional_token
 def get_games_by_id(current_user, game_id: int):
-    """GET /api/games/<id> - Get a single game"""
-    game = get_game(game_id)
+    """GET /api/games/<id> - Get a single game (owner only)"""
+    if not current_user:
+        # Guest games never live in the DB; the frontend serves them locally.
+        return jsonify(error="Not found"), 404
+    game = get_game(game_id, current_user['user_id'])
     if not game:
         return jsonify(error="Not found"), 404
     return jsonify(game)
@@ -145,8 +148,9 @@ def patch_game(current_user, game_id: int):
             return jsonify({"errors": {"holes": "Holes must be an integer"}}), 400
 
     if current_user:
-        # Logged in - update in database
-        game = update_game(game_id, name=name, holes=holes, players=players)
+        # Logged in - update in database (owner only)
+        game = update_game(game_id, name=name, holes=holes, players=players,
+                           user_id=current_user['user_id'])
         if not game:
             return jsonify({"error": "Not found"}), 404
         return jsonify(game)
@@ -168,8 +172,8 @@ def patch_score(current_user, game_id: int):
         return jsonify({"errors": {"hole": "Hole must be an integer 1..N"}}), 400
 
     if current_user:
-        # Logged in - update in database
-        updated = set_score(game_id, player, hi, score)
+        # Logged in - update in database (owner only)
+        updated = set_score(game_id, player, hi, score, user_id=current_user['user_id'])
         if not updated:
             return jsonify({"error": "Invalid game/player/hole"}), 400
         return jsonify(updated)
@@ -180,11 +184,16 @@ def patch_score(current_user, game_id: int):
 @bp.post("/games/<int:game_id>/finish")
 @optional_token
 def finish_game(current_user, game_id: int):
-    """POST /api/games/<id>/finish - Finish a game and record wins"""
-    #Get the game
-    game = get_game(game_id)
+    """POST /api/games/<id>/finish - Finish a game and record wins (owner only)"""
+    if not current_user:
+        # Guest games never live in the DB; the frontend computes guest results locally.
+        return jsonify({"success": True}), 200
+
+    user_id = current_user['user_id']
+    game = get_game(game_id, user_id)
     if not game:
         return jsonify({"error": "Game not found"}), 404
+
     #Calculate winners (same logic as Results.jsx)
     totals = []
     for player in game.get("players", []):
@@ -202,11 +211,8 @@ def finish_game(current_user, game_id: int):
     # Find all winners (handle ties)
     winners = [t["player"] for t in totals if t["total"] == best_score]
 
-    if current_user:
-        # Logged in - update wins in database
-        user_id = current_user['user_id']
-        for winner in winners:
-            update_player_wins(winner, user_id)
+    for winner in winners:
+        update_player_wins(winner, user_id)
 
     return jsonify({
         "winners": winners,
@@ -217,37 +223,38 @@ def finish_game(current_user, game_id: int):
 @bp.delete("/games/<int:game_id>")
 @optional_token
 def delete_game_route(current_user, game_id: int):
-    """DELETE /api/games/<id> - Delete a game and update win counts"""
-    # Get the game first to calculate winners
-    game = get_game(game_id)
+    """DELETE /api/games/<id> - Delete a game and update win counts (owner only)"""
+    if not current_user:
+        # Guest mode - return success (frontend handles deletion)
+        return '', 204
+
+    user_id = current_user['user_id']
+
+    # Get the game first (ownership-scoped) to calculate winners
+    game = get_game(game_id, user_id)
     if not game:
         return jsonify({"error": "Game not found"}), 404
 
-    if current_user:
-        # Calculate winners to decrement their win counts
-        totals = []
-        for player in game.get("players", []):
-            scores = game.get("scores", {}).get(player, [])
-            total = sum(score for score in scores if isinstance(score, int))
-            totals.append({"player": player, "total": total})
+    # Calculate winners to decrement their win counts
+    totals = []
+    for player in game.get("players", []):
+        scores = game.get("scores", {}).get(player, [])
+        total = sum(score for score in scores if isinstance(score, int))
+        totals.append({"player": player, "total": total})
 
-        if totals:
-            # Sort by lowest score (mini golf)
-            totals.sort(key=lambda x: x["total"])
-            best_score = totals[0]["total"]
-            # Find all winners (handle ties)
-            winners = [t["player"] for t in totals if t["total"] == best_score]
+    if totals:
+        # Sort by lowest score (mini golf)
+        totals.sort(key=lambda x: x["total"])
+        best_score = totals[0]["total"]
+        # Find all winners (handle ties)
+        winners = [t["player"] for t in totals if t["total"] == best_score]
 
-            # Decrement wins for each winner
-            user_id = current_user['user_id']
-            for winner in winners:
-                decrement_player_wins(winner, user_id)
+        # Decrement wins for each winner
+        for winner in winners:
+            decrement_player_wins(winner, user_id)
 
-        # Delete the game
-        if delete_game(game_id, user_id):
-            return '', 204
-        else:
-            return jsonify({"error": "Failed to delete game"}), 500
-    else:
-        # Guest mode - return success (frontend handles deletion)
+    # Delete the game
+    if delete_game(game_id, user_id):
         return '', 204
+    else:
+        return jsonify({"error": "Failed to delete game"}), 500
