@@ -2,11 +2,31 @@ import sqlite3
 import os
 from contextlib import contextmanager
 
+# Turso (libsql) when configured, local SQLite file otherwise.
+# Render's free-tier disk is ephemeral, so production MUST use Turso —
+# a local minigolf.db there is wiped on every deploy/restart.
+TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
+TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
+
 DATABASE_PATH = "minigolf.db"
+
+if TURSO_DATABASE_URL:
+    import libsql
+
+
+def _connect():
+    if TURSO_DATABASE_URL:
+        if TURSO_AUTH_TOKEN:
+            return libsql.connect(TURSO_DATABASE_URL, auth_token=TURSO_AUTH_TOKEN)
+        return libsql.connect(TURSO_DATABASE_URL)
+    conn = sqlite3.connect(DATABASE_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
 
 def init_db():
     """Initialize the database with required tables."""
-    with sqlite3.connect(DATABASE_PATH) as conn:
+    with get_db() as conn:
         cursor = conn.cursor()
 
         # Users table (for future authentication)
@@ -93,17 +113,23 @@ def init_db():
 @contextmanager
 def get_db():
     """Context manager for database connections."""
-    conn = sqlite3.connect(DATABASE_PATH)
-    conn.row_factory = sqlite3.Row  # Enable dict-like access to rows
+    conn = _connect()
     try:
         yield conn
     finally:
         conn.close()
 
-def dict_from_row(row):
-    """Convert sqlite3.Row to dict."""
-    return dict(row) if row else None
+def dict_from_row(cursor, row):
+    """Convert a DB-API row to dict using the cursor's column names.
 
-def dicts_from_rows(rows):
-    """Convert list of sqlite3.Row to list of dicts."""
-    return [dict(row) for row in rows]
+    Works for both sqlite3.Row and libsql tuple rows.
+    """
+    if row is None:
+        return None
+    columns = [d[0] for d in cursor.description]
+    return dict(zip(columns, row))
+
+def dicts_from_rows(cursor, rows):
+    """Convert a list of DB-API rows to dicts using the cursor's column names."""
+    columns = [d[0] for d in cursor.description]
+    return [dict(zip(columns, row)) for row in rows]
