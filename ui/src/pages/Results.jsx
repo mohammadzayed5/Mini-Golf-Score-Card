@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { guestApiFetch } from '../lib/guestApi';
+import { getGuestWins, setGuestWins, getProcessedGames, setProcessedGames } from '../lib/storage';
+import { getSessionItem, removeSessionItem } from '../lib/capacitorStorage';
 import confetti from 'canvas-confetti';
 
 
@@ -54,18 +56,20 @@ export default function Results() {
         let stop = false;
 
         if (isGuestMode) {
-          // Try to get game data from navigation state or sessionStorage
-          let gameData = guestGameData;
-          if (!gameData || !gameData.players) {
-            const sessionData = sessionStorage.getItem('guestGameData');
-            if (sessionData) {
-              gameData = JSON.parse(sessionData);
-              // Clean up sessionStorage after use
-              sessionStorage.removeItem('guestGameData');
+          (async () => {
+            // Try to get game data from navigation state, falling back to
+            // cross-platform session storage (survives iOS WebView restarts).
+            let gameData = guestGameData;
+            if (!gameData || !gameData.players) {
+              const sessionData = await getSessionItem('guestGameData');
+              if (sessionData) {
+                gameData = sessionData;
+                await removeSessionItem('guestGameData');
+              }
             }
-          }
 
-          if (gameData && gameData.players) {
+            if (stop || !gameData || !gameData.players) return;
+
             // Guest mode - use game data
             setGame(gameData);
             triggerConfetti();
@@ -82,31 +86,30 @@ export default function Results() {
             const winners = totals.length > 0
               ? totals.filter(t => t.total === totals[0].total).map(t => t.player)
               : [];
-            
-            
-            // Update localStorage wins for each winner (with double-counting prevention)
-            const processedGames = JSON.parse(sessionStorage.getItem('processedGames') || '[]');
+
+            // Update persistent wins for each winner (with double-counting prevention)
+            const processedGames = await getProcessedGames();
 
             // Check if this exact game result was already processed
             const gameHash = JSON.stringify({
-              players: gameData.players.sort(),
+              players: [...gameData.players].sort(),
               scores: Object.entries(gameData.scores || {}).sort(),
               timestamp: Math.floor(Date.now() / 60000) // Round to minute to catch quick double-processing
             });
 
             if (!processedGames.includes(gameHash)) {
-              const guestWins = JSON.parse(sessionStorage.getItem('guestWins') || '{}');
+              const guestWins = await getGuestWins();
               winners.forEach(winner => {
                 guestWins[winner] = (guestWins[winner] || 0) + 1;
               });
-              sessionStorage.setItem('guestWins', JSON.stringify(guestWins));
+              await setGuestWins(guestWins);
 
               // Mark this game as processed
               processedGames.push(gameHash);
               if (processedGames.length > 100) processedGames.shift(); // Keep only last 100 games
-              sessionStorage.setItem('processedGames', JSON.stringify(processedGames));
+              await setProcessedGames(processedGames);
             }
-          }
+          })();
         } else if (!isGuestMode) {
           // Logged in mode - fetch from API
           (async () => {

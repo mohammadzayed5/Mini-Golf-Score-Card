@@ -1,5 +1,5 @@
 // Utility for managing guest data using cross-platform storage
-import { getSessionItem, setSessionItem, removeSessionItem } from './capacitorStorage';
+import { getSessionItem, setSessionItem, removeSessionItem, getItem, setItem } from './capacitorStorage';
 
 const STORAGE_KEYS = {
     courses: 'guest_courses',
@@ -21,13 +21,7 @@ export async function getGuestData(type) {
 // Save data to storage
 export async function setGuestData(type, data) {
     try {
-        console.log('Attempting to save:', type, data);
         await setSessionItem(STORAGE_KEYS[type], data);
-        const saved = await getSessionItem(STORAGE_KEYS[type]);
-        console.log('Verification - saved data:', saved);
-        if(!saved) {
-            console.error('Storage failed to save!')
-        }
     } catch (error) {
         console.warn('Failed to save guest data:', error);
     }
@@ -48,4 +42,40 @@ export async function clearGuestData() {
     await Promise.all(
         Object.values(STORAGE_KEYS).map(key => removeSessionItem(key))
     );
+}
+
+// --- Guest wins (persistent storage: survives app restarts on iOS and web) ---
+const GUEST_WINS_KEY = 'guest_wins';
+const PROCESSED_GAMES_KEY = 'guest_processed_games';
+
+export async function getGuestWins() {
+    try {
+        return (await getItem(GUEST_WINS_KEY)) || {};
+    } catch {
+        return {};
+    }
+}
+
+export async function setGuestWins(wins) {
+    try {
+        await setItem(GUEST_WINS_KEY, wins);
+    } catch (error) {
+        console.warn('Failed to save guest wins:', error);
+    }
+}
+
+export async function getProcessedGames() {
+    try {
+        return (await getItem(PROCESSED_GAMES_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+export async function setProcessedGames(games) {
+    try {
+        await setItem(PROCESSED_GAMES_KEY, games);
+    } catch (error) {
+        console.warn('Failed to save processed games:', error);
+    }
 }

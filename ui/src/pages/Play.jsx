@@ -1,6 +1,8 @@
 import { useEffect, useState} from 'react'
 import { useParams, useNavigate} from 'react-router-dom'
-import {guestApiFetch} from '../lib/guestApi' 
+import {guestApiFetch} from '../lib/guestApi'
+import { getGuestData } from '../lib/storage'
+import { setSessionItem } from '../lib/capacitorStorage'
 
 
 export default function Play() {
@@ -15,6 +17,7 @@ export default function Play() {
     const [error, setError] = useState('')
     const [hole, setHole] = useState(1); //1-based
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [failedScores, setFailedScores] = useState([]); //scores that didn't reach the API
 
     useEffect(() => {
         //Small check to avoid setting state after unmount
@@ -38,14 +41,13 @@ export default function Play() {
                     setHole(1);
                   }
 
-                  //For guest games, check if there are updates scored in sessionStorage
+                  //For guest games, restore any scores saved in guest storage.
+                  //Must go through getGuestData: on iOS guest data lives in
+                  //Capacitor Preferences, not the WebView's sessionStorage.
                   if (data.id == null) {
-                    const gamesData = JSON.parse(sessionStorage.getItem('guest_games') || '[]');
-                    console.log('Looking for guest game data:', gamesData);
+                    const gamesData = await getGuestData('games');
                     const updatedGame = gamesData.find(g => g.id === null);
-                    console.log('Found updated game:', updatedGame);
                     if (updatedGame && updatedGame.scores) {
-                      console.log('Restoring scores:', updatedGame.scores);
                       setGame({...data, scores: updatedGame.scores});
                     }
                   }
@@ -75,7 +77,6 @@ export default function Play() {
       }));
     // persist to API only for logged-in games (guest games have id === null)
     if (game.id !== null) {
-      console.log('Saving score for logged-in game:', game.id);
       try {
         const res = await guestApiFetch(`/api/games/${game.id}/score`, {
           method: 'PATCH',
@@ -85,22 +86,43 @@ export default function Play() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
       } catch (e) {
         console.error(e);
-        setError('Could not save score.');
+        // Queue for retry (latest value per player+hole wins); UI stays usable.
+        setFailedScores(q => [
+          ...q.filter(f => !(f.player === player && f.hole === hole1)),
+          { player, hole: hole1, score: value },
+        ]);
       }
     } else {
-      console.log('Guest mode - score should be saved automatically');
-      // Also save to sessionStorage explicitly for guest games
+      // Guest games persist to local guest storage via guestApiFetch
       try {
-        const res = await guestApiFetch(`/api/games/null/score`, {
+        await guestApiFetch(`/api/games/null/score`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ player, hole: hole1, score: value }),
         });
-        console.log('Guest score save result:', res);
       } catch (e) {
         console.error('Guest score save error:', e);
       }
     }
+  };
+
+  const retryFailedScores = async () => {
+    const queue = failedScores;
+    setFailedScores([]);
+    const stillFailed = [];
+    for (const entry of queue) {
+      try {
+        const res = await guestApiFetch(`/api/games/${game.id}/score`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      } catch {
+        stillFailed.push(entry);
+      }
+    }
+    if (stillFailed.length > 0) setFailedScores(q => [...stillFailed, ...q]);
   };
 
   const bump = (player, delta) => {
@@ -146,6 +168,60 @@ export default function Play() {
 
       return (
         <main className="page play">
+          {/* Non-blocking banner when score saves fail (network hiccup etc.) */}
+          {failedScores.length > 0 && (
+            <div
+              role="alert"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.6rem 0.9rem',
+                marginBottom: '0.75rem',
+                borderRadius: '12px',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.45)',
+                color: 'var(--text)',
+                fontSize: '0.875rem',
+              }}
+            >
+              <span style={{ flex: 1 }}>
+                {failedScores.length === 1
+                  ? '1 score didn’t save.'
+                  : `${failedScores.length} scores didn’t save.`}
+              </span>
+              <button
+                onClick={retryFailedScores}
+                style={{
+                  padding: '0.35rem 0.9rem',
+                  borderRadius: '999px',
+                  border: '1px solid var(--mint)',
+                  background: 'transparent',
+                  color: 'var(--mint)',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Retry
+              </button>
+              <button
+                onClick={() => setFailedScores([])}
+                aria-label="Dismiss"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text)',
+                  opacity: 0.6,
+                  fontSize: '1.25rem',
+                  cursor: 'pointer',
+                  padding: '0 0.25rem',
+                }}
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* Header: Previous | Hole X | game name | Next */}
           <header className="holebar">
             <button className="holebtn" onClick={prevHole} disabled={hole === 1} aria-label="Previous hole">← Previous</button>
@@ -205,11 +281,11 @@ export default function Play() {
             {hole === lastHole && (
               <button
                 className="leaderboard-cta"
-                onClick={() => {
+                onClick={async () => {
                   if (game?.id === null) {
-                    // Store guest game data in sessionStorage as backup
-                    sessionStorage.setItem('guestGameData', JSON.stringify(game));
-                    // Guest game - pass game data directly
+                    // Back up guest game data in cross-platform session storage
+                    // (survives iOS WebView restarts) before navigating.
+                    await setSessionItem('guestGameData', game);
                     navigate('/results/guest', { state: { gameData: game } });
                   } else {
                     // Logged-in game - use normal route

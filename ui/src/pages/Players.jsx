@@ -3,15 +3,8 @@
 // guestApiFetch is a helper function that handles guest vs user data automatically
 import { useEffect, useState } from "react";
 import { guestApiFetch } from "../lib/guestApi";
+import { getGuestWins } from "../lib/storage";
 import AdBanner from '../components/AdBanner';
-
-function readGuestWins() {
-    try {
-        return JSON.parse(sessionStorage.getItem('guestWins') || '{}');
-    } catch {
-        return {};
-    }
-}
 
 function mergePlayersWithGuestWins(playersData, guestWins) {
     return playersData.map(player => ({
@@ -40,7 +33,7 @@ export default function Players() {
         const load = async () => {
             setErr("");
             setLoading(true);
-            const guestWins = readGuestWins();
+            const guestWins = await getGuestWins();
             try {
                 const res = await guestApiFetch("/api/players");
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -72,7 +65,7 @@ export default function Players() {
         setErr("");
         const name = window.prompt("Player name?");
         if (!name || !name.trim()) return;
-        const guestWins = readGuestWins();
+        const guestWins = await getGuestWins();
         try {
             const res = await guestApiFetch("/api/players", {
                 method: "POST",
