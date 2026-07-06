@@ -54,13 +54,6 @@ export const metadata: Metadata = {
     images: ["/og-preview.png"],
   },
 
-  // Google Search Console verification. Get the token from
-  // https://search.google.com/search-console (URL-prefix property) and replace
-  // "REPLACE_WITH_GSC_TOKEN" below. Next.js renders this as
-  // <meta name="google-site-verification" content="...">.
-  verification: {
-    google: "REPLACE_WITH_GSC_TOKEN",
-  },
 };
 
 export const viewport: Viewport = {

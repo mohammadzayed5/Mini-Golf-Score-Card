@@ -1,12 +1,14 @@
 # Python
+.venv/
 api/.venv/
+__pycache__/
 api/__pycache__/
 api/*.pyc
 api/.env
 api/.env.*.local
-api/*.db
-api/*.sqlite
-api/*.sqlite3
+
+# Curl/test session artifacts (may contain tokens)
+*cookies*.txt
 
 # Node
 ui/node_modules/
@@ -35,5 +37,3 @@ ui/ios/App/DerivedData/
 *.db
 *.sqlite
 *.sqlite3
-.venv/
-.venv/
