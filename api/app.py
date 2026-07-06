@@ -42,10 +42,18 @@ def create_app() -> Flask:
     app.register_blueprint(courses_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api")
 
-    # Cheap health check for uptime pings (keeps Render free tier warm).
+    # Health check for uptime pings. Touches the DB with a trivial query so the
+    # 10-min cron keeps BOTH Render warm and Supabase active (free Supabase
+    # projects pause after ~1 week without database activity).
     @app.route('/api/health')
     def health():
-        return {"ok": True}, 200
+        try:
+            from database import get_db
+            with get_db() as conn:
+                conn.cursor().execute("SELECT 1")
+            return {"ok": True, "db": True}, 200
+        except Exception:
+            return {"ok": True, "db": False}, 200
 
     # Serve app-ads.txt for AdMob verification
     @app.route('/app-ads.txt')
