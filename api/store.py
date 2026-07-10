@@ -1,10 +1,12 @@
 # SQLite-based data storage
-from database import get_db, dict_from_row, dicts_from_rows, init_db
+from database import get_db, dict_from_row, dicts_from_rows
 import hashlib
 import secrets #For generating random salts
 import sqlite3
-# Initialize database on import
-init_db()
+# init_db() is intentionally NOT called here. Doing it at module import
+# means every gunicorn worker runs 11 CREATE TABLE/INDEX statements over
+# the network against Turso on boot, which blows past gunicorn's worker
+# timeout on cold starts. app.create_app() calls it once during startup.
 
 def create_game(name: str, holes: int, players=None, user_id=None) -> dict:
     """Create and return a new game record.

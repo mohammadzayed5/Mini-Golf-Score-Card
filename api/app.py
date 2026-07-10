@@ -2,6 +2,7 @@
 from flask import Flask, Response
 from flask_cors import CORS
 import os
+import threading
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -13,6 +14,25 @@ from games import bp as games_bp
 from players import bp as players_bp
 from courses import bp as courses_bp
 from auth import bp as auth_bp
+from database import init_db
+
+# Runs init_db() at most once per process, off the request path so a slow
+# cross-region CREATE TABLE round-trip doesn't kill worker startup.
+_init_lock = threading.Lock()
+_init_done = False
+
+def _init_db_once_in_background():
+    def run():
+        global _init_done
+        with _init_lock:
+            if _init_done:
+                return
+            try:
+                init_db()
+                _init_done = True
+            except Exception as e:
+                print(f"init_db failed (will retry on next boot): {e}")
+    threading.Thread(target=run, daemon=True).start()
 
 
 
@@ -43,8 +63,7 @@ def create_app() -> Flask:
     app.register_blueprint(auth_bp, url_prefix="/api")
 
     # Health check for uptime pings. Touches the DB with a trivial query so the
-    # 10-min cron keeps BOTH Render warm and Supabase active (free Supabase
-    # projects pause after ~1 week without database activity).
+    # 10-min cron keeps Render's dyno warm AND Turso's DB active.
     @app.route('/api/health')
     def health():
         try:
@@ -63,6 +82,10 @@ def create_app() -> Flask:
 
     #This enables Flask CORS for all /api/* routes so Iphone can call api
     CORS(app, resources={r"/api/*": {"origins": ["https://minigolfscoretracker.com", "http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:5174", "http://127.0.0.1:5174", "capacitor://localhost", "ionic://localhost", "http://localhost"], "supports_credentials":True}})
+
+    # Kick off schema init in the background — first request may see the DB
+    # a moment before tables exist, but that's fine for CREATE IF NOT EXISTS.
+    _init_db_once_in_background()
 
     return app
 
