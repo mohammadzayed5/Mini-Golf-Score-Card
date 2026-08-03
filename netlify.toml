@@ -1,12 +1,28 @@
-# Build configuration for both UI and AppView
+# Build layout:
+#   /            → marketing landing (app-view Next.js static export)
+#   /web/*       → Vite React app (mounted with router basename "/web")
 [build]
-  command = "cd ui && npm install && npm run build && cd ../app-view && npm install && npm run build && cp -r out/* ../ui/dist/app/"
-  publish = "ui/dist"
+  command = "cd app-view && npm install && npm run build && cd ../ui && npm install && VITE_ROUTER_BASENAME=/web npm run build && cd .. && rm -rf public_out && mkdir -p public_out && cp -r app-view/out/. public_out/ && mkdir -p public_out/web && cp -r ui/dist/. public_out/web/"
+  publish = "public_out"
 
-# Redirect rules - exclude /app from SPA redirects
+# Redirect old marketing URL (/app) to root
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "/app"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/app/*"
+  to = "/:splat"
+  status = 301
+
+# SPA fallback for the Vite app under /web
+[[redirects]]
+  from = "/web"
+  to = "/web/index.html"
   status = 200
-  force = false
-  conditions = {path = ["!/app", "!/app/*"]}
+
+[[redirects]]
+  from = "/web/*"
+  to = "/web/index.html"
+  status = 200

@@ -1,0 +1,246 @@
+/* Hero dual-CTA */
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.playInBrowserButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  background: linear-gradient(135deg, #5eead4, #14b8a6);
+  color: #042f2e;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.playInBrowserButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 184, 166, 0.45);
+}
+
+.playEmoji {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+/* How it works — 3 numbered playful cards */
+.stepsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .stepsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stepCard {
+  position: relative;
+  padding: 2rem 1.5rem;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(94, 234, 212, 0.14), rgba(20, 184, 166, 0.06));
+  border: 2px solid rgba(20, 184, 166, 0.25);
+  overflow: hidden;
+}
+
+.stepCard:nth-child(2) {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.06));
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.stepCard:nth-child(3) {
+  background: linear-gradient(180deg, rgba(244, 114, 182, 0.15), rgba(219, 39, 119, 0.06));
+  border-color: rgba(219, 39, 119, 0.3);
+}
+
+.stepNumber {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.stepCard:nth-child(2) .stepNumber {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stepCard:nth-child(3) .stepNumber {
+  background: linear-gradient(135deg, #db2777, #be185d);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stepEmoji {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.stepTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.stepBody {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* Features grid — emoji cards */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .featuresGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.featureCard {
+  padding: 1.5rem 1.25rem;
+  border-radius: 20px;
+  background: rgba(20, 184, 166, 0.06);
+  border: 2px solid rgba(20, 184, 166, 0.15);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-3px);
+  border-color: rgba(20, 184, 166, 0.4);
+}
+
+.featureEmoji {
+  font-size: 2.25rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.featureTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.4rem;
+}
+
+.featureBody {
+  font-size: 0.925rem;
+  line-height: 1.5;
+  opacity: 0.75;
+  margin: 0;
+}
+
+/* FAQ */
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.faqItem {
+  border-radius: 16px;
+  border: 2px solid rgba(20, 184, 166, 0.2);
+  background: rgba(20, 184, 166, 0.04);
+  padding: 1rem 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.faqItem[open] {
+  border-color: rgba(20, 184, 166, 0.45);
+  background: rgba(20, 184, 166, 0.08);
+}
+
+.faqQuestion {
+  font-weight: 700;
+  font-size: 1.05rem;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::after {
+  content: "+";
+  font-size: 1.5rem;
+  color: #14b8a6;
+  font-weight: 400;
+  transition: transform 0.2s ease;
+}
+
+.faqItem[open] .faqQuestion::after {
+  transform: rotate(45deg);
+}
+
+.faqAnswer {
+  margin: 0.75rem 0 0;
+  line-height: 1.55;
+  opacity: 0.8;
+  font-size: 0.98rem;
+}
+
+/* Final CTA */
+.finalCta {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  border-radius: 32px;
+  background: linear-gradient(135deg, rgba(94, 234, 212, 0.15), rgba(20, 184, 166, 0.08));
+  border: 2px solid rgba(20, 184, 166, 0.3);
+}
+
+.finalCtaTitle {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+}
+
+.finalCtaSubtitle {
+  font-size: 1.05rem;
+  opacity: 0.75;
+  margin: 0 0 2rem;
+}
+
+.finalCtaActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}

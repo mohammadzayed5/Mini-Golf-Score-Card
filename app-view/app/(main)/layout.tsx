@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mini Golf Score Tracker",
     description: "Track mini golf scores with friends and family. Create custom courses, add unlimited players, and celebrate winners!",
-    url: "https://minigolfscoretracker.com/app",
+    url: "https://minigolfscoretracker.com/",
     images: [
       {
         url: "/og-preview.png",
