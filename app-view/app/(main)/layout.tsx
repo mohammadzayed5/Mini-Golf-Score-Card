@@ -88,7 +88,7 @@ posthog.init('phc_vT9jNWLVXpgdteCtgZmdqnyNSQMUSPdePzwsnYFMS3Rc',{api_host:'https
           {!IS_WAITLIST_ENABLED && (
             <>
               <Navbar
-                icon={<AppIcon src="/app_view/icon_placeholder.png" />}
+                icon={<AppIcon src="/app_view/app_icon.png" />}
                 appName="Mini Golf Score Tracker"
                 links={[
                   { label: "Features", href: "#features" },
@@ -106,7 +106,7 @@ posthog.init('phc_vT9jNWLVXpgdteCtgZmdqnyNSQMUSPdePzwsnYFMS3Rc',{api_host:'https
               <CompactFooter
                 appIcon={
                   <AppIcon
-                    src="/app_view/icon_placeholder.png"
+                    src="/app_view/app_icon.png"
                     filter="grayscale"
                   />
                 }
