@@ -2,6 +2,9 @@
 #   /            → marketing landing (app-view Next.js static export)
 #   /web/*       → Vite React app (mounted with router basename "/web")
 [build]
+  # Override the site-level base (which was set to "ui/") so we build from
+  # the repo root — both app-view/ and ui/ live there.
+  base = "."
   command = "cd app-view && npm install && npm run build && cd ../ui && npm install && VITE_ROUTER_BASENAME=/web npm run build && cd .. && rm -rf public_out && mkdir -p public_out && cp -r app-view/out/. public_out/ && mkdir -p public_out/web && cp -r ui/dist/. public_out/web/"
   publish = "public_out"
 
