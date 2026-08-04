@@ -1,6 +1,5 @@
 import { DownloadActionButton } from "@/components/download_action_button/download_action_button";
 import { Hero } from "@/components/hero/hero";
-import { RatingLaurelsBadge } from "@/components/rating_laurels_badge/rating_laurels_badge";
 import { Section } from "@/components/section/section";
 import styles from "./page.module.css";
 
@@ -93,13 +92,6 @@ export default function Page() {
               src="/app_view/Simulator Screenshot - iPhone 17 Pro Max - 2025-11-11 at 00.49.16.png"
               bezel="iPhone 17 Black"
               alt="Mini Golf Score Tracker home screen"
-            />
-          }
-          badges={
-            <RatingLaurelsBadge
-              showStars={true}
-              rating={5.0}
-              caption="App Store rating"
             />
           }
           action={
