@@ -19,42 +19,42 @@ export const metadata: Metadata = {
    * Recommended length for title is max 60 characters.
    * Recommended length for description is max 160 characters.
    */
-  title: "Mini Golf Score Tracker - Track Scores with Friends & Family",
-  description: "The easiest way to track mini golf scores with friends and family. Create custom courses, add unlimited players, and celebrate winners with confetti. Works offline!",
+  title: "Mini Golf Score Tracker · Free Scorecard App for iPhone & Web",
+  description: "Track mini golf scores hole-by-hole with friends. Unlimited players, live leaderboard, running win count. Free on iPhone and web. Works offline.",
 
-  /**
-   * Your website URL.
-   */
   metadataBase: new URL("https://minigolfscoretracker.com"),
 
-  /**
-   * Info inside `openGraph` and `twitter` is used to show rich previews
-   * on social media when someone shares a link to your website.
-   *
-   * AppView comes with a tool to help you generate an Open Graph image,
-   * run the dev server and go to `http://localhost:3000/open-graph-builder`.
-   */
+  alternates: {
+    canonical: "/",
+  },
+
   openGraph: {
     title: "Mini Golf Score Tracker",
-    description: "Track mini golf scores with friends and family. Create custom courses, add unlimited players, and celebrate winners!",
+    description: "Free mini golf scorecard app. Add unlimited players, tap in each hole, and watch the leaderboard update. iPhone and web.",
     url: "https://minigolfscoretracker.com/",
+    siteName: "Mini Golf Score Tracker",
     images: [
       {
         url: "/og-preview.png",
         width: 1200,
         height: 720,
-        alt: "Mini Golf Score Tracker App",
+        alt: "Mini Golf Score Tracker app screenshot",
       },
     ],
     type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Mini Golf Score Tracker",
-    description: "Track mini golf scores with friends and family. Create custom courses, add unlimited players, and celebrate winners!",
+    description: "Free mini golf scorecard app. Add unlimited players, tap in each hole, watch the leaderboard update.",
     images: ["/og-preview.png"],
   },
 
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
@@ -92,6 +92,7 @@ posthog.init('phc_vT9jNWLVXpgdteCtgZmdqnyNSQMUSPdePzwsnYFMS3Rc',{api_host:'https
                 appName="Mini Golf Score Tracker"
                 links={[
                   { label: "Features", href: "#features" },
+                  { label: "Guides", href: "#guides" },
                   { label: "Contact", href: "mailto:mohammadzayed521@gmail.com" },
                 ]}
                 action={<DownloadActionButton />}

@@ -1,26 +1,73 @@
+import Link from "next/link";
 import { DownloadActionButton } from "@/components/download_action_button/download_action_button";
 import { Hero } from "@/components/hero/hero";
 import { Section } from "@/components/section/section";
 import styles from "./page.module.css";
 
+/**
+ * FAQ is the single source of truth. The visible <details> list below AND the
+ * FAQPage JSON-LD are both rendered from this array, so they stay byte-identical.
+ * WARNING: if you edit the wording, you are updating both the visible copy and
+ * the schema in one shot, and that is intentional. Do NOT hand-edit the schema.
+ */
+type FaqItem = {
+  q: string;
+  a: string;
+  learnMore?: { href: string; label: string };
+};
+
+const FAQ: readonly FaqItem[] = [
+  {
+    q: "Is it free?",
+    a: "Yeah, free on iPhone and free in the browser. On the iPhone version, a small ad banner shows up on a couple of screens to keep the servers running. No paywalls, no upsell.",
+  },
+  {
+    q: "Do I need an account?",
+    a: "Nope. Guest mode saves everything on your phone. Make an account only if you want your games and player stats to follow you between the app and the web.",
+    learnMore: { href: "/guides/how-to-score-mini-golf", label: "How the app scores each round" },
+  },
+  {
+    q: "Does it work without internet?",
+    a: "Yes. Start and finish a whole round in airplane mode. If you are signed in, the scores sync back up next time you get bars.",
+  },
+  {
+    q: "How many players can I add?",
+    a: "As many as you want. I have run it with twelve at a birthday party and nothing broke.",
+  },
+  {
+    q: "Can I set the number of holes?",
+    a: "Yes. Pick any hole count when you set up the course, and the app remembers the course name for next time.",
+    learnMore: { href: "/guides/mini-golf-rules", label: "How mini golf scoring works" },
+  },
+  {
+    q: "Does it keep track of wins across games?",
+    a: "Yes. Every player has a win count that carries over, so the ongoing family championship has receipts.",
+  },
+  {
+    q: "Any tips for planning a mini golf birthday?",
+    a: "Two big ones: keep groups to four so the pace stays fun, and let one kid per group hold the phone so nobody argues over whose turn it is to tap. There is a full playbook in the guide.",
+    learnMore: { href: "/guides/mini-golf-birthday-party-ideas", label: "Birthday party playbook" },
+  },
+];
+
 const HOW_IT_WORKS = [
   {
     step: "01",
     emoji: "👥",
-    title: "Pick your players",
-    body: "Add the crew — no signup, no accounts. Whoever showed up.",
+    title: "Add everyone playing",
+    body: "Type in the names. Two friends or the whole birthday party, up to you.",
   },
   {
     step: "02",
     emoji: "⛳",
-    title: "Tap through the holes",
-    body: "Score hole-by-hole with big buttons. Works offline, so it doesn’t matter if the course has Wi-Fi.",
+    title: "Tap in each hole",
+    body: "Big +/− buttons for the score. Big enough to hit while someone is arguing about their 7.",
   },
   {
     step: "03",
     emoji: "🏆",
-    title: "Crown the winner",
-    body: "Confetti, a leaderboard, and a running win count that sticks around for next time.",
+    title: "See who won",
+    body: "Confetti at the end, plus a running win tally so nobody forgets who the family champ is.",
   },
 ];
 
@@ -28,87 +75,144 @@ const FEATURES = [
   {
     emoji: "🏆",
     title: "Live leaderboard",
-    body: "See who’s winning after every hole, updated in real time.",
+    body: "Peek mid-round to see who is leading after every hole.",
   },
   {
     emoji: "⛳",
-    title: "Custom courses",
-    body: "Any number of holes, any course name. Save it, reuse it.",
+    title: "Any course, any hole count",
+    body: "Set 9, 18, or whatever hole count the course has. Name it, save it, reuse it next time.",
   },
   {
     emoji: "👨‍👩‍👧",
-    title: "Unlimited players",
-    body: "Two friends or a whole family reunion — no player cap.",
+    title: "Bring the whole crew",
+    body: "No player cap. Two friends or a party of twelve, both work.",
   },
   {
     emoji: "✈️",
-    title: "Works offline",
-    body: "Start and finish a full game with no signal. Nothing gets lost.",
+    title: "Works with no signal",
+    body: "Play a full round on airplane mode. Scores stay put and sync later if you are signed in.",
   },
   {
     emoji: "📊",
-    title: "Winner history",
-    body: "Wins persist per player across games — the running scoreboard your family will actually argue about.",
+    title: "Wins that stick around",
+    body: "Every player has a running win count. The family rivalry finally has receipts.",
   },
   {
     emoji: "🚀",
-    title: "No signup needed",
-    body: "Guest mode is fully featured. Sign in only if you want sync.",
+    title: "No signup wall",
+    body: "Guest mode is the full app. Sign in only if you want history across devices.",
   },
 ];
 
-const FAQ = [
+const GUIDES = [
   {
-    q: "Do I need an account?",
-    a: "No. Guest mode works fully offline and everything saves to your device. Sign up only if you want your history to sync across devices.",
+    slug: "mini-golf-rules",
+    title: "Mini Golf Rules, Explained Plainly",
+    blurb: "Order of play, max strokes, and the ones every group argues about.",
   },
   {
-    q: "Does it work without internet?",
-    a: "Yes — you can start and finish a whole game with no signal. Scores sync when you’re back online (if you’re signed in).",
+    slug: "how-to-score-mini-golf",
+    title: "How to Score Mini Golf",
+    blurb: "Par, bogey, and what to do when Uncle Rob takes eleven on hole 4.",
   },
   {
-    q: "How many players can I add?",
-    a: "As many as you want. Two, twelve, whole birthday party — no limit.",
+    slug: "mini-golf-birthday-party-ideas",
+    title: "Mini Golf Birthday Party Ideas",
+    blurb: "Group sizes, prizes, and how to keep 8-year-olds from throwing clubs.",
   },
   {
-    q: "Can I customize the course?",
-    a: "Yep. Set any number of holes (1–36), name the course whatever you want.",
+    slug: "mini-golf-scoring-cheat-sheet",
+    title: "Mini Golf Scoring Cheat Sheet",
+    blurb: "Par by hole, max strokes, and how to break a tie without a rematch.",
   },
   {
-    q: "Is it free?",
-    a: "Yes. Free on iOS and free in the browser. No paywalls.",
+    slug: "backyard-mini-golf",
+    title: "How to Build a Backyard Mini Golf Course",
+    blurb: "Nine holes with pool noodles, PVC, and stuff already in the garage.",
   },
-];
+  {
+    slug: "printable-mini-golf-scorecard",
+    title: "Printable Mini Golf Scorecard (and a faster way)",
+    blurb: "PDF you can print. Plus the app version that adds it up for you.",
+  },
+] as const;
+
+const APP_STORE_URL = "https://apps.apple.com/app/id6755137607";
+
+function faqJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+}
+
+function appJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "MobileApplication",
+    name: "Mini Golf Score Tracker",
+    operatingSystem: "iOS",
+    applicationCategory: "SportsApplication",
+    downloadUrl: APP_STORE_URL,
+    url: "https://minigolfscoretracker.com/",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    author: {
+      "@type": "Person",
+      name: "Mohammad Zayed",
+    },
+  };
+}
 
 export default function Page() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(appJsonLd()) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()) }}
+      />
+
       <Section paddingTop={100}>
         <Hero
-          title="Mini golf scores, minus the paper scorecard"
-          subtitle="The easiest way to track mini golf with friends and family. Add unlimited players, score hole-by-hole, and celebrate the winner — offline-friendly and free."
+          title="Keep score without the golf pencil"
+          subtitle="Add everyone playing, tap in each hole, and watch the leaderboard update as you go. Free on iPhone and web. Works when the course has zero bars."
           media={
             <Hero.Image
               src="/app_view/Simulator Screenshot - iPhone 17 Pro Max - 2025-11-11 at 00.49.16.png"
               bezel="iPhone 17 Black"
-              alt="Mini Golf Score Tracker home screen"
+              alt="Mini Golf Score Tracker home screen on iPhone"
             />
           }
           action={
             <div className={styles.heroActions}>
-              <DownloadActionButton size="medium" />
+              <DownloadActionButton size="medium" label="Get it free" />
               <a href="/web" className={styles.playInBrowserButton}>
                 <span className={styles.playEmoji} aria-hidden="true">
                   ⛳
                 </span>
-                Play in browser
+                Play in the browser
               </a>
             </div>
           }
         />
       </Section>
 
-      <Section navigationAnchor="how-it-works" title="How it works">
+      <Section navigationAnchor="how-it-works" title="How a round goes">
         <div className={styles.stepsGrid}>
           {HOW_IT_WORKS.map((step) => (
             <article key={step.step} className={styles.stepCard}>
@@ -123,7 +227,7 @@ export default function Page() {
         </div>
       </Section>
 
-      <Section navigationAnchor="features" title="Everything you need. Nothing you don’t.">
+      <Section navigationAnchor="features" title="What it does on a round">
         <div className={styles.featuresGrid}>
           {FEATURES.map((feature) => (
             <article key={feature.title} className={styles.featureCard}>
@@ -137,12 +241,40 @@ export default function Page() {
         </div>
       </Section>
 
-      <Section navigationAnchor="faq" title="Questions">
+      <Section navigationAnchor="guides" title="Planning a round or a party?">
+        <p className={styles.guidesLead}>
+          Quick guides for the questions people search before a round.
+        </p>
+        <div className={styles.guidesGrid}>
+          {GUIDES.map((guide) => (
+            <Link
+              key={guide.slug}
+              href={`/guides/${guide.slug}`}
+              className={styles.guideCard}
+            >
+              <h3 className={styles.guideTitle}>{guide.title}</h3>
+              <p className={styles.guideBlurb}>{guide.blurb}</p>
+              <span className={styles.guideArrow} aria-hidden="true">
+                Read →
+              </span>
+            </Link>
+          ))}
+        </div>
+      </Section>
+
+      <Section navigationAnchor="faq" title="Questions people ask before downloading">
         <div className={styles.faqList}>
           {FAQ.map((item) => (
             <details key={item.q} className={styles.faqItem}>
               <summary className={styles.faqQuestion}>{item.q}</summary>
               <p className={styles.faqAnswer}>{item.a}</p>
+              {item.learnMore && (
+                <p className={styles.faqLearnMore}>
+                  <Link href={item.learnMore.href}>
+                    Learn more: {item.learnMore.label} →
+                  </Link>
+                </p>
+              )}
             </details>
           ))}
         </div>
@@ -151,18 +283,18 @@ export default function Page() {
       <Section paddingTop={80} paddingBottom={160}>
         <div className={styles.finalCta}>
           <h2 className={styles.finalCtaTitle}>
-            Grab your putter. Grab the app.
+            Grab it before your next round
           </h2>
           <p className={styles.finalCtaSubtitle}>
-            Free on iOS and in the browser. No signup, no ads inside your game.
+            Free download. First hole in about a minute.
           </p>
           <div className={styles.finalCtaActions}>
-            <DownloadActionButton size="medium" />
+            <DownloadActionButton size="medium" label="Get it free" />
             <a href="/web" className={styles.playInBrowserButton}>
               <span className={styles.playEmoji} aria-hidden="true">
                 ⛳
               </span>
-              Play in browser
+              Play in the browser
             </a>
           </div>
         </div>
