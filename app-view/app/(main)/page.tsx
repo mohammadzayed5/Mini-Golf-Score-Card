@@ -2,6 +2,7 @@ import Link from "next/link";
 import { DownloadActionButton } from "@/components/download_action_button/download_action_button";
 import { Hero } from "@/components/hero/hero";
 import { Section } from "@/components/section/section";
+import { GUIDES } from "@/guides";
 import styles from "./page.module.css";
 
 /**
@@ -103,39 +104,6 @@ const FEATURES = [
     body: "Guest mode is the full app. Sign in only if you want history across devices.",
   },
 ];
-
-const GUIDES = [
-  {
-    slug: "mini-golf-rules",
-    title: "Mini Golf Rules, Explained Plainly",
-    blurb: "Order of play, max strokes, and the ones every group argues about.",
-  },
-  {
-    slug: "how-to-score-mini-golf",
-    title: "How to Score Mini Golf",
-    blurb: "Par, bogey, and what to do when Uncle Rob takes eleven on hole 4.",
-  },
-  {
-    slug: "mini-golf-birthday-party-ideas",
-    title: "Mini Golf Birthday Party Ideas",
-    blurb: "Group sizes, prizes, and how to keep 8-year-olds from throwing clubs.",
-  },
-  {
-    slug: "mini-golf-scoring-cheat-sheet",
-    title: "Mini Golf Scoring Cheat Sheet",
-    blurb: "Par by hole, max strokes, and how to break a tie without a rematch.",
-  },
-  {
-    slug: "backyard-mini-golf",
-    title: "How to Build a Backyard Mini Golf Course",
-    blurb: "Nine holes with pool noodles, PVC, and stuff already in the garage.",
-  },
-  {
-    slug: "printable-mini-golf-scorecard",
-    title: "Printable Mini Golf Scorecard (and a faster way)",
-    blurb: "PDF you can print. Plus the app version that adds it up for you.",
-  },
-] as const;
 
 const APP_STORE_URL = "https://apps.apple.com/app/id6755137607";
 
@@ -253,7 +221,7 @@ export default function Page() {
               className={styles.guideCard}
             >
               <h3 className={styles.guideTitle}>{guide.title}</h3>
-              <p className={styles.guideBlurb}>{guide.blurb}</p>
+              <p className={styles.guideBlurb}>{guide.cardBlurb}</p>
               <span className={styles.guideArrow} aria-hidden="true">
                 Read →
               </span>

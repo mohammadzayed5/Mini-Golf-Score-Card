@@ -1,6 +1,16 @@
+import type { Metadata } from "next";
 import { Instructions } from "./components/instructions/instructions";
 import { OpenGraphPreview } from "./components/open_graph_preview/open_graph_preview";
 import styles from "./page.module.css";
+
+/**
+ * Internal tool. It is also disallowed in app/robots.ts, but a disallow only
+ * stops crawling, so a URL that gets linked from elsewhere can still be listed.
+ * This keeps it out of the index if it is ever fetched.
+ */
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default function OpenGraphBuilderPage() {
   return (

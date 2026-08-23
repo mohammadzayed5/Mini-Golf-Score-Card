@@ -1,4 +1,9 @@
-import { APP_ID, IS_WAITLIST_ENABLED, THEME } from "@/constants";
+import {
+  APP_ID,
+  GOOGLE_SITE_VERIFICATION,
+  IS_WAITLIST_ENABLED,
+  THEME,
+} from "@/constants";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 
@@ -55,6 +60,15 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+
+  /**
+   * Emits <meta name="google-site-verification"> for Search Console. Set the
+   * token in src/constants.ts. While it is empty the tag is left out, because
+   * an empty content value fails verification instead of just doing nothing.
+   */
+  verification: GOOGLE_SITE_VERIFICATION
+    ? { google: GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {

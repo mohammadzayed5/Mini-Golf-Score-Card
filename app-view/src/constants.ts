@@ -18,6 +18,22 @@ export const THEME: "system" | "light" | "dark" = "system";
 export const APP_ID = "6755137607";
 
 /**
+ * Google Search Console site verification token.
+ *
+ * Leave this empty. minigolfscoretracker.com is already verified in Search
+ * Console as a *domain* property (sc-domain:minigolfscoretracker.com), which
+ * is verified by DNS TXT record and covers every subdomain and both http and
+ * https. That is strictly stronger than an HTML meta tag, so no tag is needed
+ * and app/(main)/layout.tsx omits it while this is empty.
+ *
+ * This only exists as a fallback: if the DNS TXT record is ever lost (domain
+ * transfer, nameserver change) and re-verification by meta tag is easier, take
+ * the token from Search Console's "HTML tag" method — paste only the `content`
+ * value, not the whole tag — deploy, then press Verify.
+ */
+export const GOOGLE_SITE_VERIFICATION = "";
+
+/**
  * Custom fonts for 'whimsical' and 'cursive' font styles.
  * Default system font is used for all other font styles.
  * See https://nextjs.org/docs/app/getting-started/fonts#google-fonts
