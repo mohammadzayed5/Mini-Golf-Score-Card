@@ -47,17 +47,21 @@
   <key>UIViewControllerBasedStatusBarAppearance</key>
   <false/>
 
-  <!-- DEV ONLY: allow HTTP loads for WebView content so your app can reach http://<LAN_IP>:5001 -->
-  <!-- Remove this when you switch your API to HTTPS -->
-  <key>NSAppTransportSecurity</key>
-  <dict>
-    <key>NSAllowsArbitraryLoadsInWebContent</key>
-    <true/>
-  </dict>
-
   <!-- Google AdMob App ID -->
   <key>GADApplicationIdentifier</key>
   <string>ca-app-pub-5108646735858325~1799492394</string>
+
+  <!--
+    Required before calling ATTrackingManager.requestTrackingAuthorization.
+    AdMobContext.jsx requests tracking authorization; without this key iOS
+    raises NSInternalInconsistencyException at the moment it tries to present
+    the prompt, and that is a native abort a JS try/catch cannot intercept.
+
+    Keep the wording aligned with the App Tracking Transparency section of
+    the privacy policy at minigolfscoretracker.com/privacy.
+  -->
+  <key>NSUserTrackingUsageDescription</key>
+  <string>Allow tracking so the ads in Mini Golf Score Tracker are more relevant to you. Your scores and player names are never shared.</string>
 
   <!-- SKAdNetwork identifiers for ad attribution (required by Apple) -->
   <key>SKAdNetworkItems</key>

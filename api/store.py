@@ -573,10 +573,21 @@ def delete_user(user_id: int) -> bool:
     Permanently delete a user and all their associated data.
 
     This function will:
-    1. Delete all games created by the user
-    2. Delete all players created by the user
-    3. Delete all courses created by the user
-    4. Delete the user account itself
+    1. Delete the scores and player rows belonging to the user's games
+    2. Delete all games created by the user
+    3. Delete all players created by the user
+    4. Delete all courses created by the user
+    5. Delete the user account itself
+
+    Child rows are deleted explicitly rather than relying on the ON DELETE
+    CASCADE declared in database.py. SQLite enforces cascades only when
+    `PRAGMA foreign_keys = ON` is set per connection, which get_db() does not
+    do, and the Turso HTTP path does not honour it the same way as the local
+    sqlite3 fallback. Deleting in order works identically on both backends.
+
+    This matters beyond tidiness: `scores` and `game_players` hold free-text
+    player names, which are usually other people and often children. Leaving
+    them behind would contradict the deletion promise in the privacy policy.
 
     Args:
         user_id: ID of the user to delete
@@ -588,7 +599,20 @@ def delete_user(user_id: int) -> bool:
         with get_db() as conn:
             cursor = conn.cursor()
 
-            # Delete all user's games (this will cascade to game_scores due to foreign key)
+            # Child rows first, scoped to the user's games via subquery so this
+            # stays a single statement regardless of how many games there are.
+            cursor.execute(
+                "DELETE FROM scores WHERE game_id IN "
+                "(SELECT id FROM games WHERE user_id = ?)",
+                (user_id,),
+            )
+            cursor.execute(
+                "DELETE FROM game_players WHERE game_id IN "
+                "(SELECT id FROM games WHERE user_id = ?)",
+                (user_id,),
+            )
+
+            # Delete all user's games
             cursor.execute("DELETE FROM games WHERE user_id = ?", (user_id,))
 
             # Delete all user's players

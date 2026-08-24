@@ -1,118 +1,174 @@
 ---
 title: "Privacy Policy · Mini Golf Score Tracker"
-description: "How Mini Golf Score Tracker handles your data on iPhone and on the web."
+description: "What Mini Golf Score Tracker stores, what it never collects, and how ads and analytics work on iPhone and on the web."
 alternates:
   canonical: /privacy
+openGraph:
+  title: "Privacy Policy · Mini Golf Score Tracker"
+  description: "What Mini Golf Score Tracker stores, what it never collects, and how ads and analytics work on iPhone and on the web."
+  url: /privacy
+  type: website
 ---
 
-## Privacy Policy
+# Privacy Policy
 
-Apple requires every app to have a proper privacy policy that explains how user data is collected, used, and protected.
+Last updated: August 23, 2026
 
-Depending on your app you might just use a simple, one paragraph privacy policy describing what data is collected (if any) in human friendly terms. But for more complex case you might need a more and more formal language.
+This covers the Mini Golf Score Tracker iPhone app and the website at minigolfscoretracker.com, including the browser version of the app at /web.
 
-AI chatbot of choice is your best friend here. Here is a prompt template, customize and give it to AI, it should produce a decent first draft that you can iterate on further:
+## The short version
 
-```
-You are a privacy-policy drafting assistant. Generate a clear, App Store–ready Privacy Policy for an iOS app.
+- The app never asks for your email address. There is no email field anywhere.
+- Your username is whatever you type. It does not have to be your real name.
+- You can use the entire app without making an account at all.
+- Ads run on the iPhone app and on the guide articles on this site.
+- Analytics run on both, and are not connected to your username or your scores.
+- Everything is stored on servers in the United States.
 
-Constraints:
-- Output in plain English.
-- Use clear headings and short paragraphs.
-- Must match the data practices described below exactly (do not invent practices).
-- Include sections: Overview, Data We Collect, How We Use Data, Sharing, Third-Party Services, Data Retention, Security, Your Choices & Rights, Children’s Privacy, International Transfers, App Tracking Transparency, Push Notifications, Contact Us, Changes to This Policy.
-- Keep it suitable for a single webpage.
-- Ask follow up questions if any details are unclear.
+## Who we are
 
-APP INFORMATION
-- App name: [APP_NAME]
-- Company / Developer name: [DEVELOPER_NAME]
-- Website: [WEBSITE_URL]
-- Support email: [SUPPORT_EMAIL]
-- Countries/regions offered: [REGIONS] (e.g., “Worldwide” or list)
-- Target audience age: [AGE_RATING] (e.g., 4+, 12+, 17+)
+Mini Golf Score Tracker is made by Zayed Software LLC. For anything in this policy, email [support@minigolfscoretracker.com](mailto:support@minigolfscoretracker.com).
 
-DATA COLLECTION SUMMARY (Apple “App Privacy” style)
-For each data type, specify: collected? (yes/no), linked to user? (yes/no), used for tracking? (yes/no), purposes.
-Use ONLY the items marked “yes”.
+## What we collect
 
-Data types (fill each line):
-- Contact info (name, email, phone): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Identifiers (user ID, device ID): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Usage data (product interaction, diagnostics): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Diagnostics (crash data, performance): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Purchases (purchase history): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Location (precise/approx): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- User content (photos, files, text): collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Health & fitness: collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Financial info: collected [YES/NO]; linked [YES/NO]; tracking [YES/NO]; purposes: [PURPOSES]
-- Other: [LIST_ANY_OTHER_APPLE_DATA_TYPES_USED]
+### If you make an account
 
-TRACKING (App Tracking Transparency)
-- Do you track users across apps/sites owned by other companies? [YES/NO/UNKNOWN]
-- If YES: describe tracking data and partners: [DETAILS]
-- If NO: state that the app does not track as defined by Apple.
+- **Your username.** You pick it. It gets lowercased and has to be 3 to 30 characters.
+- **Your password, as a hash.** It is run through PBKDF2-HMAC-SHA256 with a random 32-byte salt and 100,000 iterations. The plain password is never written down anywhere and cannot be recovered from what we store, not even by us.
+- **When you signed up.**
+- **A session token** that expires 24 hours after you sign in.
 
-ACCOUNT & AUTH
-- Does the app have accounts? [YES/NO]
-- Sign-in methods: [Apple ID / Email+Password / Google / etc.]
-- If accounts exist: what profile fields are stored: [FIELDS]
-- Password handling (if applicable): [e.g., “handled by Firebase Auth” / “stored hashed” / “N/A”]
+We never ask for your email address, real name, phone number, mailing address, or date of birth. There is no "sign in with Apple," "sign in with Google," or "sign in with Facebook." If you forget your password there is no reset email, because we have no email to send it to.
 
-PAYMENTS
-- Monetization model: [Free / Paid / IAP / Subscriptions / Ads]
-- Payment processor(s): [Apple In-App Purchase / Stripe / etc.]
-- If using Apple IAP: confirm you do not receive full card details: [YES/NO/UNKNOWN]
+### What you type into the app
 
-THIRD-PARTY SDKs & SERVICES
-List every SDK/service and what data it receives.
-For each item include: name, provider, purpose, data types shared, whether linked/tracking, and link to provider privacy policy.
+Player names, course names, hole counts, per-hole scores, running win counts, and the date each game was played.
 
-Third parties (fill as list):
-1) [SERVICE_NAME] by [PROVIDER] — purpose: [PURPOSE]
-   - Data shared: [DATA_TYPES]
-   - Linked: [YES/NO/UNKNOWN]
-   - Tracking: [YES/NO/UNKNOWN]
-   - Provider policy: [URL]
-2) …
+### About the names you enter
 
-Common examples to consider (remove if unused):
-- Analytics: [Firebase Analytics / Amplitude / Mixpanel / NONE]
-- Crash reporting: [Crashlytics / Sentry / NONE]
-- Ads: [AdMob / Meta Audience Network / NONE]
-- Attribution: [AppsFlyer / Adjust / Branch / NONE]
-- Cloud sync: [CloudKit / Firebase / custom backend / NONE]
-- Payments: [Apple IAP / Stripe / NONE]
-- Customer support: [Intercom / Zendesk / email only / NONE]
-- Push notifications: [APNs only / OneSignal / Firebase Messaging / etc.]
-- Maps: [Apple Maps / Google Maps / NONE]
+This is the part worth reading twice. When you add players, the app stores those names exactly as you type them. In practice they are other people, and often they are children, and none of them agreed to anything.
 
-DATA STORAGE & RETENTION
-- Where is data stored? [On-device only / iCloud / CloudKit / Your servers / Vendor servers]
-- If on your servers: hosting provider and regions: [DETAILS]
-- Retention rules:
-  - Account data retained until: [e.g., deletion request / X days after inactivity / UNKNOWN]
-  - Logs/diagnostics retained for: [DURATION]
-  - Backups retained for: [DURATION]
-- Data deletion method:
-  - In-app deletion: [YES/NO]
-  - Email request: [YES/NO]
-  - Steps user must take: [DETAILS]
+So: first names or nicknames are plenty. Do not type anything about another person you would not want sitting on a server.
 
-CHILDREN
-- Is the app directed to children under 13? [YES/NO]
-- If NO: state you do not knowingly collect data from children under 13.
-- If YES: describe parental consent flow and data limits: [DETAILS]
+If a name of yours, or your child's, is in somebody's scorecard and you want it gone, email [support@minigolfscoretracker.com](mailto:support@minigolfscoretracker.com) and it will be deleted. You do not need an account to ask, and you do not have to explain why.
 
-SECURITY
-Describe security measures accurately:
-- Transport security: [HTTPS/TLS/ATS]
-- At-rest encryption: [YES/NO/UNKNOWN]
-- Access controls: [DETAILS/UNKNOWN]
+### If you play as a guest
 
-CONTACT
-- Privacy contact email: [PRIVACY_EMAIL or SUPPORT_EMAIL]
-- Mailing address (optional): [ADDRESS or NONE]
+Guest games stay on your device and are never sent to our server.
 
-Now generate the full Privacy Policy.
-```
+On iPhone they are kept in the app's own storage. **They stay there until you delete the app.** Closing the app does not clear them.
+
+In a browser, courses, players, and games are kept in session storage and clear when the browser session ends. Win counts and processed-game records are kept in local storage and stay until you clear site data for this site.
+
+One thing to know: even in guest mode, the app asks our server whether you happen to be signed in. That request carries your IP address and browser or device string, so those reach our server logs even if you never make an account. What it does not carry is any of your guest content.
+
+### Collected automatically
+
+- **Analytics events**, described below.
+- **Ordinary web request data** at our hosting providers: IP address, user agent, and timestamps.
+
+### What we never collect
+
+Location. Contacts. Photos or camera. Microphone. Health or fitness data. Calendar. Bluetooth. Push notification tokens. Payment or financial information of any kind, because nothing in the app costs money.
+
+The app's own code also never reads your device's advertising identifier. Google's ad SDK handles that separately, covered under Advertising below.
+
+## How we use it
+
+Your account data signs you in and keeps your games attached to you. Your scores and player names render your scorecards, leaderboards, and win history. Analytics tell us which screens people actually use. Ads pay for the servers.
+
+That is the whole list. Nothing is sold, and nobody is profiled.
+
+## Analytics
+
+### PostHog
+
+PostHog runs on this website and inside the app, and tells us things like which screens get opened and where people drop off.
+
+We never call PostHog's identify function. Combined with the setting we use, that means **PostHog holds no profile for you at all** — events carry a random device ID and are never linked to your username, your scores, or the names you entered. Data is processed in the United States.
+
+### Google Analytics
+
+Google Analytics runs on the **website only**. It is switched off inside the iPhone app, and that is a code-level check, not a promise.
+
+You can opt out across every site with [Google's browser add-on](https://tools.google.com/dlpage/gaoptout).
+
+### Google Fonts
+
+The marketing pages load an icon font stylesheet from Google's servers, which means Google sees your IP address and user agent when a page loads. The text fonts are served from our own domain and do not do this.
+
+## Advertising
+
+### Ads in the iPhone app
+
+We use Google AdMob to show a banner ad on a few screens. AdMob receives device and network information in order to pick, deliver, and measure ads. We also use Apple's SKAdNetwork, which measures whether an ad worked without identifying you.
+
+You can reset or limit your advertising ID at any time in iOS Settings under Privacy & Security, then Tracking.
+
+### App Tracking Transparency
+
+The app shows Apple's tracking prompt. If you allow it, Google may use your device's advertising identifier to personalize ads across other apps and sites. If you tap "Ask App Not to Track," you still get ads, they are just not personalized. You can change your mind later in iOS Settings under Privacy & Security, then Tracking.
+
+### Ads on this website
+
+Google AdSense ads appear on the guide articles only. Not on the home page, and not in the browser version of the app. AdSense uses cookies to select and measure ads; you control personalization at [Google Ad Settings](https://adssettings.google.com).
+
+### About sharing
+
+An earlier version of this policy said we do not share your information with third parties. That was not accurate, so here is the honest version.
+
+We do not sell your data. We do share the technical data described above — device and network information, advertising identifiers where you have allowed them, and analytics events — with our advertising and analytics providers, because that is what makes ads and analytics work at all. Under some privacy laws, including California's, serving personalized ads counts as "sharing." Your opt-outs are the ATT prompt on iPhone and Google Ad Settings on the web.
+
+## Where your data lives
+
+| Provider | What it does |
+| --- | --- |
+| Netlify | Hosts this website and the browser app |
+| Render | Hosts the API |
+| Turso | Hosts the database |
+| PostHog | Product analytics |
+| Google | AdMob, AdSense, Analytics, Fonts |
+| Apple | App Store distribution |
+
+## Security
+
+Traffic between the app and our API runs over HTTPS. Passwords are salted and hashed with PBKDF2 at 100,000 iterations and are never stored in a readable form. Session tokens expire after 24 hours. Access to the database is limited to the developer.
+
+No system is perfectly secure, and we are not going to pretend otherwise. What we can say is that the amount of data worth stealing here is deliberately small: there are no email addresses, no payment details, and no real names unless you typed one in.
+
+## Keeping and deleting data
+
+Account data is kept until you delete it. You can delete your account inside the app under Account Settings, then Delete Account. That removes your account, your games, your players, your courses, and the scores attached to them. You can also email support and ask.
+
+Guest data is yours to remove: delete the app on iPhone, or clear site data in a browser.
+
+Analytics events and server logs are kept on our providers' own retention schedules.
+
+## Your choices
+
+- **See or delete your data.** Delete Account in the app, or email support.
+- **Turn off ad personalization.** The ATT prompt on iPhone; Google Ad Settings on the web.
+- **Turn off Google Analytics.** Use Google's opt-out add-on.
+- **Skip accounts entirely.** Guest mode is the full app and nothing leaves your device.
+
+If you are in the UK or the EU, you have rights to access, correct, delete, and port your data, and to object to processing. Email support and we will handle it. We rely on legitimate interests for analytics and basic operation, and on consent for personalized advertising.
+
+## Children
+
+Mini Golf Score Tracker is a general-audience scorekeeping app. It is not directed to children under 13, and we do not knowingly collect personal information from them. The App Store rates it 4+, which describes the content, not who it is aimed at.
+
+Kids do play mini golf, and their names end up in scorecards typed by adults. See the section on names above — that removal route exists specifically for this.
+
+If you believe a child under 13 has given us personal information, email support and we will delete it.
+
+## International transfers
+
+Wherever you are, your data is processed in the United States.
+
+## Changes
+
+If this policy changes, the new version goes up here and the date at the top changes with it. Anything significant also gets a line in the release notes.
+
+## Contact
+
+[support@minigolfscoretracker.com](mailto:support@minigolfscoretracker.com) — Zayed Software LLC

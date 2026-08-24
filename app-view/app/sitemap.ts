@@ -38,9 +38,10 @@ type CorePage = {
 const CORE_PAGES: readonly CorePage[] = [
   { path: "/", lastModified: "2026-08-22", changeFrequency: "monthly", priority: 1.0 },
   { path: "/guides", lastModified: "2026-08-22", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/contact", lastModified: "2026-08-23", changeFrequency: "yearly", priority: 0.5 },
   { path: "/release-notes", lastModified: "2026-02-10", changeFrequency: "monthly", priority: 0.4 },
-  { path: "/privacy", lastModified: "2026-02-10", changeFrequency: "yearly", priority: 0.3 },
-  { path: "/terms", lastModified: "2026-02-10", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/privacy", lastModified: "2026-08-23", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/terms", lastModified: "2026-08-23", changeFrequency: "yearly", priority: 0.3 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

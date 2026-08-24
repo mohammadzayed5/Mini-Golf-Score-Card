@@ -93,9 +93,9 @@ We created Mini Golf Score Tracker because we love mini golf, and we noticed tha
 
 We take your privacy seriously. We collect only the minimal data necessary to provide the service, and we never sell your information to third parties. Guest mode data is stored locally and never leaves your device.
 
-📱 100% FREE
+📱 FREE
 
-All features are completely free. No subscriptions, no ads, no premium tiers. Just a great mini golf scoring experience.
+Every feature is free. No subscriptions, no premium tiers, no paywalls. A small banner ad on a few screens keeps the servers running.
 
 ⚡ BUILT WITH MODERN TECHNOLOGY
 
@@ -304,8 +304,9 @@ Suggested content:
 
 - App uses HTTPS for all network communication
 - Backend API hosted at: https://mini-golf-score-card.onrender.com
-- No third-party analytics or tracking
-- No advertisements
+- Analytics: PostHog (app and web), Google Analytics (web only)
+- Advertising: Google AdMob banner ads on iOS; Google AdSense on the website's
+  guide articles. The app shows Apple's App Tracking Transparency prompt.
 - No in-app purchases
 - No subscriptions
 

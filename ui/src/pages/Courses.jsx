@@ -4,7 +4,6 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {guestApiFetch} from "../lib/guestApi";
-import AdBanner from '../components/AdBanner';
 
 export default function Courses() {
 
@@ -155,7 +154,6 @@ export default function Courses() {
                   </button>
 
                   {/* AdMob Banner Ad - Courses Page */}
-                  <AdBanner adUnitId="ca-app-pub-5108646735858325/2774674474" position="BOTTOM_CENTER" />
                 </main>
               );
             }

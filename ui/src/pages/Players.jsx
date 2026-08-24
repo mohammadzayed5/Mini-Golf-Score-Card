@@ -4,7 +4,6 @@
 import { useEffect, useState } from "react";
 import { guestApiFetch } from "../lib/guestApi";
 import { getGuestWins } from "../lib/storage";
-import AdBanner from '../components/AdBanner';
 
 function mergePlayersWithGuestWins(playersData, guestWins) {
     return playersData.map(player => ({
@@ -138,7 +137,6 @@ export default function Players() {
                 <span className="plus" aria-hidden>＋</span> Add Player
             </button>
 
-            <AdBanner adUnitId="ca-app-pub-5108646735858325/7215223181" position="BOTTOM_CENTER" />
         </main>
     );
 }

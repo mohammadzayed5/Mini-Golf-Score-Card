@@ -26,18 +26,27 @@ export const AdMobProvider = ({ children }) => {
         const { AdMob } = await import('@capacitor-community/admob');
         if (!isMounted) return;
 
-        // Init without the tracking prompt so it doesn't block first paint.
         await AdMob.initialize({
-          requestTrackingAuthorization: false,
           initializeForTesting: false,
         });
         if (!isMounted) return;
         setIsInitialized(true);
 
-        // Ask for tracking authorization after the UI is up. Failure is non-fatal.
+        // Ask for tracking authorization after the UI is up, but only when the
+        // user has not already answered. Re-requesting once the status is
+        // determined is a no-op, so this just avoids a pointless bridge call.
+        //
+        // This needs NSUserTrackingUsageDescription in Info.plist. Without it
+        // iOS aborts the process natively when it tries to present the prompt,
+        // and the catch below cannot save you — it only sees JS errors.
         try {
-          await AdMob.requestTrackingAuthorization();
-        } catch {}
+          const { status } = await AdMob.trackingAuthorizationStatus();
+          if (status === 'notDetermined') {
+            await AdMob.requestTrackingAuthorization();
+          }
+        } catch (error) {
+          console.error('AdMob: tracking authorization failed:', error);
+        }
       } catch (error) {
         console.error('AdMob: Initialization failed:', error);
       }

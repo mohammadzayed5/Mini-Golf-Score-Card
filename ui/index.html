@@ -40,7 +40,17 @@
     </script>
 
     <script>
-      // Only load Google Analytics/AdSense on web (not in native iOS app)
+      // Only load Google Analytics on web (not in native iOS app)
+      //
+      // The AdSense loader used to be here too, and it is why AdSense
+      // disapproved minigolfscoretracker.com for "Google-served ads on screens
+      // without publisher-content". These are app screens — scorecards, player
+      // lists, navigation — with no article content for an ad to sit beside.
+      // There were never any ad slots here either, so it only ever cost a
+      // request and a policy violation.
+      //
+      // Website ads belong on the guide articles instead, which is where the
+      // marketing site (app-view) places them. Do not reintroduce it here.
       if (!window.Capacitor || !window.Capacitor.isNativePlatform()) {
         // Google Analytics
         window.dataLayer = window.dataLayer || [];
@@ -48,17 +58,10 @@
         gtag('js', new Date());
         gtag('config', 'G-G7MYHV2REZ');
 
-        // Load scripts
         const gtagScript = document.createElement('script');
         gtagScript.async = true;
         gtagScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-G7MYHV2REZ';
         document.head.appendChild(gtagScript);
-
-        const adsenseScript = document.createElement('script');
-        adsenseScript.async = true;
-        adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5108646735858325';
-        adsenseScript.crossOrigin = 'anonymous';
-        document.head.appendChild(adsenseScript);
       }
     </script>
   </head>

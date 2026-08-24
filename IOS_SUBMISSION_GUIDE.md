@@ -319,8 +319,15 @@ Click on "1.0 Prepare for Submission":
    - **User ID:** Yes → Linked to user → App Functionality
    - **Name:** Yes → Linked to user → App Functionality
    - **Other User Content:** Yes → Linked to user → App Functionality
-   - **Do you use data for tracking?** No
+   - **Device ID:** Yes → Not linked to user → Third-Party Advertising
+   - **Product Interaction:** Yes → Not linked to user → Analytics
+   - **Do you use data for tracking?** Yes
 3. Publish privacy choices
+
+> The app serves Google AdMob banner ads and shows Apple's App Tracking
+> Transparency prompt, so "Used for Tracking" must be **Yes** and Device ID must
+> be declared. Answering No here while a live ATT prompt is shipping is a
+> standard rejection reason, and can also get ad serving restricted.
 
 #### Screenshots
 

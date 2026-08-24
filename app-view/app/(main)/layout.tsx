@@ -107,7 +107,7 @@ posthog.init('phc_vT9jNWLVXpgdteCtgZmdqnyNSQMUSPdePzwsnYFMS3Rc',{api_host:'https
                 links={[
                   { label: "Features", href: "#features" },
                   { label: "Guides", href: "#guides" },
-                  { label: "Contact", href: "mailto:mohammadzayed521@gmail.com" },
+                  { label: "Contact", href: "/contact" },
                 ]}
                 action={<DownloadActionButton />}
               />
@@ -129,12 +129,11 @@ posthog.init('phc_vT9jNWLVXpgdteCtgZmdqnyNSQMUSPdePzwsnYFMS3Rc',{api_host:'https
                   { label: "Privacy", href: "/privacy" },
                   {
                     label: "Terms of Use",
-                    href: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
-                    external: true,
+                    href: "/terms",
                   },
                   {
                     label: "Contact",
-                    href: "mailto:mohammadzayed521@gmail.com",
+                    href: "/contact",
                   },
                 ]}
                 footnoteLeading={`© ${new Date().getFullYear()} Mini Golf Score Tracker. All rights reserved.`}

@@ -19,6 +19,25 @@
   to = "/:splat"
   status = 301
 
+# The React app used to be served from the domain root before it moved under
+# /web. Google still has these four paths indexed as 404s. Point them at the
+# closest real marketing page rather than into /web, which robots.txt blocks.
+# (/contact is a real page now, so it needs no redirect.)
+[[redirects]]
+  from = "/about"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/help"
+  to = "/guides"
+  status = 301
+
+[[redirects]]
+  from = "/courses"
+  to = "/"
+  status = 301
+
 # SPA fallback for the Vite app under /web
 [[redirects]]
   from = "/web"

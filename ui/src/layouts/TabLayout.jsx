@@ -3,6 +3,7 @@
 
 import {Outlet,} from "react-router-dom";
 import NavigationBar from "../components/NavigationBar";
+import AdBanner from "../components/AdBanner";
 
 
 export default function TabLayout() {
@@ -14,9 +15,12 @@ export default function TabLayout() {
         </div>
         {/*Persistent bottom tabs shown on all "main" screens */}
         <NavigationBar />
+        {/*
+          One banner for the whole shell. It picks its ad unit from the current
+          route, so pages must NOT mount their own <AdBanner /> — AdMob only has
+          one global banner and multiple mounts race each other.
+        */}
+        <AdBanner />
         </div>
     );
 }
-
-
-

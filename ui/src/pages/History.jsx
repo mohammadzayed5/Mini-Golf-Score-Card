@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AuthPrompt from "../components/AuthPrompt";
 import { apiFetch } from "../lib/api";
-import AdBanner from "../components/AdBanner";
 
 function calculateWinner(game) {
     if (!game.players || game.players.length === 0) return null;
@@ -561,7 +560,6 @@ export default function History() {
             )}
 
             {/* AdMob Banner Ad - History Page */}
-            {/* <AdBanner adUnitId="ca-app-pub-5108646735858325/8100929442" position="BOTTOM_CENTER" /> */}
         </main>
     );
 }

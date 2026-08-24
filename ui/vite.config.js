@@ -19,7 +19,12 @@ export default defineConfig({
     },
   },
   esbuild: {
-    drop: ['console', 'debugger'],
+    // `drop: ['console']` strips console.error and console.warn too, which is
+    // why every AdMob failure was invisible in production builds. Mark only the
+    // chatty levels as side-effect-free so the minifier removes them, and let
+    // errors and warnings survive into the shipped bundle.
+    pure: ['console.log', 'console.debug', 'console.info'],
+    drop: ['debugger'],
   },
   server: {
     host: true,
