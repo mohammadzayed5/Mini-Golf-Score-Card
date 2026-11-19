@@ -25,32 +25,13 @@ Works offline during a round; wins persist per player across games.
 | Marketing site | Next.js 15 (`app-view/`) → Netlify |
 | API | Flask + gunicorn (`gthread`, 4 threads) on Render (`api/`) |
 | Auth | JWT (PyJWT) |
-| Database | [Turso](https://turso.tech) (libsql) via a custom pure-Python HTTP client — see below |
+| Database | [Turso](https://turso.tech) (libsql) |
 | Monetization | Google AdMob + SKAdNetwork |
-
-## The Turso HTTP client story
-
-The API originally used the official `libsql` Python package. It deadlocked
-under gunicorn's threaded worker — the embedded tokio runtime can't cleanly
-shut down when called across Python threads, and every request would 502
-with a Rust panic in Render's logs:
-
-```
-thread 'tokio-runtime-worker' panicked: failed to join thread: Resource deadlock avoided (os error 35)
-```
-
-Rather than move to a sync worker or off Turso, I wrote a pure-Python
-DB-API 2.0 client for Turso's hrana `/v2/pipeline` HTTP protocol using only
-`requests`. It's now [its own repo](https://github.com/mohammadzayed5/turso-http)
-you can pip-install and drop in wherever `sqlite3` used to sit.
-
-- **Repo**: [github.com/mohammadzayed5/turso-http](https://github.com/mohammadzayed5/turso-http)
-- **Write-up**: [Rewriting Turso's Python client because the official one deadlocks under gunicorn](https://github.com/mohammadzayed5/turso-http/blob/main/POST_DRAFT.md)
 
 ## Repo layout
 
 ```
-api/          Flask API + database access layer (uses turso-http in prod, sqlite3 in dev)
+api/          Flask API + database access layer (Turso in prod, sqlite3 in dev)
 ui/           React + Vite web app; also the Capacitor iOS project (ui/ios/)
 app-view/     Next.js marketing site → minigolfscoretracker.com
 app-ads.txt   AdMob authorized-sellers file (served from the marketing site)

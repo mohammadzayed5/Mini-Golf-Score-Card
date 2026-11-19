@@ -15,6 +15,8 @@ from players import bp as players_bp
 from courses import bp as courses_bp
 from auth import bp as auth_bp
 from database import init_db
+from rate_limits import limiter, init_limits
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Runs init_db() at most once per process, off the request path so a slow
 # cross-region CREATE TABLE round-trip doesn't kill worker startup.
@@ -55,6 +57,18 @@ def create_app() -> Flask:
     app.config['SESSION_COOKIE_SAMESITE'] = 'None' if is_production else 'Lax'
     app.config['SESSION_COOKIE_DOMAIN'] = '.minigolfscoretracker.com' if is_production else None
     app.config['PERMANENT_SESSION_LIFETIME'] = 86400
+    #Reject request bodies over 1 MB. Every body this API takes is a small JSON object.
+    app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
+
+    #Render puts one proxy in front of the app, so the visitor's real address
+    #is in X-Forwarded-For. Trust exactly one hop: without this every request
+    #looks like it comes from the proxy and all users would share one rate limit.
+    if is_production:
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
+
+    #Rate limits (see rate_limits.py)
+    init_limits(app)
+
     #Mount both blueprints under /api
     app.register_blueprint(hello_bp, url_prefix="/api")
     app.register_blueprint(games_bp, url_prefix="/api")
@@ -65,6 +79,7 @@ def create_app() -> Flask:
     # Health check for uptime pings. Touches the DB with a trivial query so the
     # 10-min cron keeps Render's dyno warm AND Turso's DB active.
     @app.route('/api/health')
+    @limiter.exempt
     def health():
         try:
             from database import get_db

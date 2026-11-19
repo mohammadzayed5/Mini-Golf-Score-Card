@@ -1,0 +1,10 @@
+const { chromium, devices } = require('playwright');
+const OUT='/private/tmp/claude-501/-Users-mohammadzayed-dev-Zayed-Software-LLC/34fb4d68-092a-471a-8191-c2f8d54994ad/scratchpad/review/v3';
+(async()=>{const b=await chromium.launch({headless:true,channel:'chrome'});
+const ctx=await b.newContext({...devices['iPhone 13'],viewport:{width:390,height:844}});
+const p=await ctx.newPage();await p.goto('http://localhost:8787/',{waitUntil:'networkidle'});await p.waitForTimeout(1600);
+await p.evaluate(()=>document.getElementById('zs-cue').scrollIntoView({block:'center'}));await p.waitForTimeout(800);
+await p.locator('#zs-cue').screenshot({path:OUT+'/phone-cue2.png'});
+const r=await p.evaluate(()=>{const c=document.getElementById('zs-cue').getBoundingClientRect();return {t:c.top,l:c.left,w:c.width,h:c.height};});
+await p.screenshot({path:OUT+'/phone-cue-ctx.png',clip:{x:Math.max(0,r.l-140),y:Math.max(0,r.t-90),width:340,height:230}});
+console.log(JSON.stringify(r));await b.close();})();

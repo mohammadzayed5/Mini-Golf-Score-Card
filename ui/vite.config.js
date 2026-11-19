@@ -1,9 +1,20 @@
+/* global process */
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// Asset base path. Must be absolute: with the old relative './' the built
+// index.html asked for './assets/x.js', which from a nested route such as
+// /web/play/3 resolved to /web/play/assets/x.js. Netlify's SPA fallback
+// answered that with index.html, so any refresh or direct link to a game or
+// results page rendered blank. The router basename doubles as the base:
+//   web (Netlify):  VITE_ROUTER_BASENAME=/web  -> base '/web/'
+//   iOS / local:    unset                      -> base '/'
+const routerBasename = (process.env.VITE_ROUTER_BASENAME || '').replace(/\/+$/, '');
+const base = `${routerBasename}/`;
+
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base,
   build: {
     target: 'es2020',
     sourcemap: false,

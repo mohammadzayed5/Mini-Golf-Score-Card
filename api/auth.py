@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
 from store import create_user, authenticate_user, delete_user
 from jwt_utils import create_token, decode_token, token_required
+from rate_limits import limiter, REGISTER_LIMITS, LOGIN_LIMITS
 
 # Blueprint groups related routes, it is mounted under /api in app.py
 bp = Blueprint("auth", __name__)
 
 
 @bp.post("/register")
+@limiter.limit(REGISTER_LIMITS)
 def register_route():
     """
     POST /api/register
@@ -42,7 +44,8 @@ def register_route():
         #create_user raises ValueError for validation errors
         return jsonify({"error": str(e)}),400
 
-@bp.post("/login")  
+@bp.post("/login")
+@limiter.limit(LOGIN_LIMITS)
 def login_route():
     """
     POST /api/login
