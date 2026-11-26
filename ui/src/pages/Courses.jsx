@@ -4,6 +4,8 @@
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {guestApiFetch} from "../lib/guestApi";
+import { cleanName } from "../lib/gameEdit";
+import HolesPicker from "../components/HolesPicker";
 
 export default function Courses() {
 
@@ -18,6 +20,9 @@ export default function Courses() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
+    //Inline "add a course" form (replaces two system prompts)
+    const [newName, setNewName] = useState("");
+    const [newHoles, setNewHoles] = useState(18);
 
     //Helper Function to make initials from a name
     const initials = (name) =>
@@ -40,9 +45,9 @@ export default function Courses() {
                     if(!res.ok) throw new Error(`HTTP ${res.status}`);
                     const data = await res.json();
                     if(!cancelled) setCourses(data); //update state
-                }   catch (e) {
+                }   catch {
                     if (!cancelled) {
-                        setErr("No current courses.");
+                        setErr("Couldn't load your courses. You can still add one below or skip.");
                         setCourses([]);
                 }
             } finally {
@@ -54,21 +59,24 @@ export default function Courses() {
         }, []); // [] = run once on mount
 
         //Add a course flow
-        const addCourse = async () => {
+        const addCourse = async (e) => {
+            e.preventDefault();
             setErr("");
-            const name = window.prompt("Course name?");
-            if(!name || !name.trim()) return;
-
-            const holesStr = window.prompt("How many holes?");
-            const holes = parseInt(holesStr, 10);
-            if(!Number.isFinite(holes) || holes <=0) return;
+            const name = cleanName(newName);
+            const holes = newHoles;
+            if(!name) return;
+            if(holes == null) {
+                setErr("Enter a number of holes from 1 to 36.");
+                return;
+            }
+            setNewName("");
 
             try {
                 // Access API
                 const res = await guestApiFetch("/api/courses", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ name: name.trim(), holes }),
+                  body: JSON.stringify({ name, holes }),
                 });
                 if (res.ok) {
                   const created = await res.json();
@@ -77,11 +85,11 @@ export default function Courses() {
                   // If API isn't ready, add locally so you can keep moving
                   setCourses((p) => [
                     ...p,
-                    { id: Date.now(), name: name.trim(), holes },
+                    { id: Date.now(), name, holes },
                   ]);
                 }
               } catch {
-                setCourses((p) => [...p, { id: Date.now(), name: name.trim(), holes }]);
+                setCourses((p) => [...p, { id: Date.now(), name, holes }]);
               }
             };
 
@@ -112,8 +120,10 @@ export default function Courses() {
                 <main className="page players">
                   <h1 className="title">Courses</h1>
                   {loading && <p>Loading…</p>}
-                  {err && <p className="error">{err}</p>}
-            
+                  {!loading && courses.length === 0 && (
+                    <p className="hint">No courses saved yet. Add one below, or skip this step.</p>
+                  )}
+
                   <ul className="players-list">
                     {courses.map((c) => (
                       <li
@@ -148,9 +158,32 @@ export default function Courses() {
                     ))}
                   </ul>
             
-                  {/* Big "Add Player" button */}
-                  <button className="add-player" onClick={addCourse} aria-label="Add Course">
-                    <span className="plus" aria-hidden>＋</span> Add Course
+                  {/* Inline add-course form */}
+                  <form className="setup-panel" style={{ marginTop: 22 }} onSubmit={addCourse}>
+                    <div className="setup-label"><span>New course</span></div>
+                    <input
+                      className="holes-custom"
+                      type="text"
+                      value={newName}
+                      onChange={(e) => setNewName(e.target.value)}
+                      placeholder="Course name"
+                      aria-label="Course name"
+                      autoComplete="off"
+                      autoCapitalize="words"
+                      maxLength={60}
+                    />
+                    <div className="setup-label"><span>Holes</span></div>
+                    <HolesPicker value={newHoles} onChange={setNewHoles} />
+                    <button className="add-player" style={{ marginTop: 4 }} type="submit" disabled={!newName.trim()}>
+                      <span className="plus" aria-hidden>＋</span> Add Course
+                    </button>
+                  </form>
+
+                  {err && <p className="error" role="alert">{err}</p>}
+
+                  {/* A course is optional: go straight to players and pick holes there */}
+                  <button className="skip-course" onClick={() => navigate('/playerSelect')}>
+                    Skip, play without a course
                   </button>
 
                   {/* AdMob Banner Ad - Courses Page */}

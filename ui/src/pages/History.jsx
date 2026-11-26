@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AuthPrompt from "../components/AuthPrompt";
 import { apiFetch } from "../lib/api";
+import { hasAnyScore, firstOpenHole } from "../lib/gameEdit";
 
 function calculateWinner(game) {
     if (!game.players || game.players.length === 0) return null;
@@ -20,12 +21,16 @@ function calculateWinner(game) {
 }
 
 function formatDate(dateString) {
-    const date = new Date(dateString);
+    // The API stores "YYYY-MM-DD HH:MM:SS" in UTC with no zone marker. Read as
+    // local time that lands in the future for anyone west of UTC, which showed
+    // up as "-1 days ago".
+    const hasZone = /(Z|[+-]\d\d:?\d\d)$/i.test(String(dateString));
+    const date = new Date(hasZone ? dateString : `${String(dateString).replace(' ', 'T')}Z`);
     const now = new Date();
     const diffMs = now - date;
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffDays === 0) return "Today";
+    if (diffDays <= 0) return "Today";
     if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
 
@@ -62,8 +67,9 @@ export default function History() {
                 throw new Error("Failed to load games");
             }
             const data = await res.json();
-            // Sort by created_at DESC (newest first)
-            const sorted = data.sort((a, b) => {
+            // Sort by created_at DESC (newest first). Games nobody scored a
+            // single hole in are false starts, not rounds: leave them out.
+            const sorted = data.filter(hasAnyScore).sort((a, b) => {
                 return new Date(b.created_at) - new Date(a.created_at);
             });
             setGames(sorted);
@@ -247,9 +253,11 @@ export default function History() {
             </div>
 
             <div style={{ display: 'grid', gap: '1rem' }}>
-                {gamesWithResults.map(({ game, result }) => {
+                {gamesWithResults.map(({ game, result }, index) => {
                     const winners = result?.winners || [];
                     const totals = result?.totals || [];
+                    // Newest game still has a hole with no score: offer to pick it back up
+                    const openHole = index === 0 ? firstOpenHole(game) : null;
 
                     return (
                         <div
@@ -437,6 +445,27 @@ export default function History() {
                                     ))}
                                 </div>
                             </div>
+
+                            {openHole !== null && (
+                                <button
+                                    onClick={() => navigate(`/play/${game.id}`)}
+                                    style={{
+                                        display: 'block',
+                                        width: '100%',
+                                        marginTop: '0.75rem',
+                                        padding: '0.75rem',
+                                        borderRadius: '10px',
+                                        border: '2px solid var(--mint)',
+                                        background: 'rgba(94, 234, 212, 0.12)',
+                                        color: 'var(--mint)',
+                                        fontSize: '1rem',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Resume at hole {openHole}
+                                </button>
+                            )}
 
                             {/* Click hint */}
                             <p

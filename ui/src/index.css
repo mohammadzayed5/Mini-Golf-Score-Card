@@ -1038,3 +1038,165 @@ body { display: block; }
     font-size: 16px;
   }
 }
+
+/* === Game setup: inline name field, holes picker, mid-game edit sheet === */
+.hint { color: #c9d6f2; font-size: 14px; margin: 8px 0 12px; }
+.hint.warn { color: #fbbf24; }
+
+.setup-panel {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: #212937;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+}
+.setup-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: #c9d6f2;
+  font-size: 14px;
+  font-weight: 600;
+}
+.setup-label a { color: var(--mint); font-weight: 700; }
+
+.holes-picker { display: grid; gap: 10px; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.seg button {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.06);
+  color: #f5f7fa;
+  font-weight: 700;
+  font-size: 16px;
+}
+.seg button.on {
+  background: linear-gradient(180deg, var(--mint), var(--mint-soft));
+  border-color: rgba(124, 247, 193, 0.6);
+  color: #062e22;
+}
+
+/* 16px text keeps iOS from zooming the page when a field is focused */
+.add-row input,
+.holes-custom {
+  width: 100%;
+  min-width: 0;
+  height: 52px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 2px solid rgba(124, 247, 193, 0.3);
+  border-radius: 14px;
+  background: rgba(15, 27, 25, 0.8);
+  color: #fff;
+  font-size: 16px;
+}
+.add-row input:focus,
+.holes-custom:focus { outline: none; border-color: var(--mint-soft); }
+
+.add-row { display: flex; gap: 10px; margin-top: 14px; }
+.add-row input { flex: 1; }
+.add-row button {
+  height: 52px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 14px;
+  background: #6ee7b7;
+  color: #0a1e18;
+  font-weight: 800;
+  font-size: 16px;
+}
+.add-row button:disabled,
+.add-player:disabled { opacity: 0.5; }
+
+.skip-course {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  height: 48px;
+  border-radius: 14px;
+  background: transparent;
+  border: 1px solid rgba(124, 247, 193, 0.4);
+  color: var(--mint);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Play screen: round name row with the edit button */
+.coursename { display: flex; align-items: center; gap: 10px; }
+.editgame-btn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(124, 247, 193, 0.4);
+  color: var(--mint);
+  font-weight: 700;
+  font-size: 12px;
+}
+/* The hole score is a read-out, not a button */
+.pill.round.score-value {
+  background: transparent;
+  color: #eaf7f1;
+  border-color: rgba(255,255,255,0.15);
+  box-shadow: none;
+}
+
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+}
+.sheet {
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  background: var(--bg-deep);
+  border: 2px solid rgba(94, 234, 212, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.sheet-title { margin: 0 0 1rem; font-size: 1.4rem; color: var(--mint); }
+.sheet-players { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.sheet-players li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #212937;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  color: #f5f7fa;
+  font-weight: 700;
+}
+.sheet-remove {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 107, 107, 0.45);
+  color: #ff6b6b;
+  font-weight: 700;
+  font-size: 13px;
+}
+.sheet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.sheet-cancel,
+.sheet-save { height: 48px; border-radius: 14px; font-weight: 800; font-size: 16px; }
+.sheet-cancel { background: transparent; border: 1px solid rgba(124, 247, 193, 0.3); color: var(--mint); }
+.sheet-save { background: linear-gradient(180deg, var(--mint), var(--mint-soft)); border: none; color: #073d2b; }
+.sheet-save:disabled,
+.sheet-cancel:disabled,
+.sheet-remove:disabled { opacity: 0.5; }

@@ -293,6 +293,21 @@ def update_player_wins(player_name: str, user_id=None) -> bool:
             raise
 
 
+def mark_game_finished(game_id: int, user_id) -> bool:
+    """Mark a game finished. Returns True only the first time, so the caller
+    can award wins exactly once however often the results page is opened."""
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE games SET finished_at = CURRENT_TIMESTAMP "
+            "WHERE id = ? AND user_id = ? AND finished_at IS NULL",
+            (game_id, user_id)
+        )
+        first_time = cursor.rowcount > 0
+        conn.commit()
+        return first_time
+
+
 def set_score(game_id: int, player: str, hole_index: int, score, user_id=None) -> dict | None:
     """Set score (or None) for player at hole_index (0-based).
 

@@ -4,6 +4,8 @@
 import { useEffect, useState } from "react";
 import { guestApiFetch } from "../lib/guestApi";
 import { getGuestWins } from "../lib/storage";
+import { cleanName, sameName } from "../lib/gameEdit";
+import AddNameField from "../components/AddNameField";
 
 function mergePlayersWithGuestWins(playersData, guestWins) {
     return playersData.map(player => ({
@@ -25,6 +27,7 @@ export default function Players() {
     const [players, setPlayers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [err, setErr] = useState("");
+    const [newName, setNewName] = useState("");
 
     useEffect(() => {
         let cancelled = false;
@@ -60,30 +63,30 @@ export default function Players() {
         return () => { cancelled = true; };
     }, []);
 
-    const addPlayer = async () => {
+    const addPlayer = async (raw) => {
         setErr("");
-        const name = window.prompt("Player name?");
-        if (!name || !name.trim()) return;
+        const name = cleanName(raw);
+        if (!name) return;
+        if (players.some(p => sameName(p.name, name))) {
+            setErr(`${name} is already in your players.`);
+            return;
+        }
+        setNewName("");
         const guestWins = await getGuestWins();
         try {
             const res = await guestApiFetch("/api/players", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: name.trim() }),
+                body: JSON.stringify({ name }),
             });
-            if (res.ok) {
-                const created = await res.json();
-                const merged = mergePlayersWithGuestWins([created], guestWins)[0];
-                setPlayers((p) => [...p, merged]);
-            } else {
-                const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
-                const merged = mergePlayersWithGuestWins([newPlayer], guestWins)[0];
-                setPlayers((p) => [...p, merged]);
-            }
-        } catch {
-            const newPlayer = { id: Date.now(), name: name.trim(), wins: 0 };
-            const merged = mergePlayersWithGuestWins([newPlayer], guestWins)[0];
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const created = await res.json();
+            const merged = mergePlayersWithGuestWins([created], guestWins)[0];
             setPlayers((p) => [...p, merged]);
+        } catch {
+            // This screen is the saved list, so don't pretend it was saved
+            setNewName(name);
+            setErr("Couldn't save that player. Check your connection and try again.");
         }
     };
 
@@ -109,7 +112,7 @@ export default function Players() {
             <h1 className="title">Players</h1>
 
             {loading && <p>Loading…</p>}
-            {err && <p className="error">{err}</p>}
+            {err && <p className="error" role="alert">{err}</p>}
 
             <ul className="players-list">
                 {players.map((p) => (
@@ -133,9 +136,13 @@ export default function Players() {
                 ))}
             </ul>
 
-            <button className="add-player" onClick={addPlayer} aria-label="Add Player">
-                <span className="plus" aria-hidden>＋</span> Add Player
-            </button>
+            <AddNameField
+                value={newName}
+                onChange={setNewName}
+                onAdd={addPlayer}
+                placeholder="Add a player"
+                label="New player name"
+            />
 
         </main>
     );

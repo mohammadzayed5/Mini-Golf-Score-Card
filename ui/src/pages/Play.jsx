@@ -3,6 +3,8 @@ import { useParams, useNavigate} from 'react-router-dom'
 import {guestApiFetch} from '../lib/guestApi'
 import { getGuestData } from '../lib/storage'
 import { setSessionItem } from '../lib/capacitorStorage'
+import { sameName, applyGameEdit, firstOpenHole } from '../lib/gameEdit'
+import EditGameSheet from '../components/EditGameSheet'
 
 
 export default function Play() {
@@ -17,6 +19,7 @@ export default function Play() {
     const [error, setError] = useState('')
     const [hole, setHole] = useState(1); //1-based
     const [showLeaderboard, setShowLeaderboard] = useState(false);
+    const [showEdit, setShowEdit] = useState(false); //add/remove players, change holes
     const [failedScores, setFailedScores] = useState([]); //scores that didn't reach the API
 
     useEffect(() => {
@@ -32,14 +35,7 @@ export default function Play() {
 
                 const data = await res.json();
                 if(!stopped) {
-                  setGame(data);
-
-                  const savedHole = sessionStorage.getItem(`game_${id}_currentHole`);
-                  if (savedHole){
-                    setHole(parseInt(savedHole, 10));
-                  } else {
-                    setHole(1);
-                  }
+                  let loaded = data;
 
                   //For guest games, restore any scores saved in guest storage.
                   //Must go through getGuestData: on iOS guest data lives in
@@ -48,9 +44,18 @@ export default function Play() {
                     const gamesData = await getGuestData('games');
                     const updatedGame = gamesData.find(g => g.id === null);
                     if (updatedGame && updatedGame.scores) {
-                      setGame({...data, scores: updatedGame.scores});
+                      loaded = {...data, scores: updatedGame.scores};
                     }
                   }
+                  if (stopped) return;
+                  setGame(loaded);
+
+                  //Return to the hole they were on. With nothing remembered
+                  //(new game, or resumed from History) go to the first hole
+                  //that still needs a score.
+                  const savedHole = parseInt(sessionStorage.getItem(`game_${id}_currentHole`), 10);
+                  const startHole = Number.isFinite(savedHole) ? savedHole : (firstOpenHole(loaded) ?? 1);
+                  setHole(Math.min(Math.max(1, startHole), loaded.holes ?? 18));
                 }
             } catch(e) {
               console.error(e)
@@ -131,7 +136,55 @@ export default function Play() {
     const next = Math.max(0, before + delta);
     setScore(player, hole, next);
   };
-  const resetToZero = (player) => setScore(player, hole, 0);
+
+  //Save a mid-game change to the players or the hole count. Existing scores
+  //are kept. Throws if it could not be stored so the sheet can say so.
+  const saveGameEdit = async ({ players, holes }) => {
+    const body = {};
+    if (players) body.players = players;
+    if (holes) body.holes = holes;
+    //Signed-in games go to PATCH /api/games/:id; guest games (id null) are
+    //updated in local guest storage by guestApiFetch.
+    const res = await guestApiFetch(`/api/games/${game.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const next = applyGameEdit(game, { players, holes });
+    //Apply to the latest state so score taps made meanwhile are not lost
+    setGame(g => applyGameEdit(g, { players, holes }));
+    //Drop queued retries for players or holes that no longer exist
+    setFailedScores(q => q.filter(f => next.players.includes(f.player) && f.hole <= next.holes));
+    if (hole > next.holes) {
+      setHole(next.holes);
+      sessionStorage.setItem(`game_${id}_currentHole`, next.holes);
+    }
+    setShowEdit(false);
+    if (players) rememberNewPlayers(players.filter(p => !game.players.includes(p)));
+  };
+
+  //Someone added mid-game should also show up in the saved Players list next
+  //time. Best effort in the background: the game itself is already saved.
+  const rememberNewPlayers = async (names) => {
+    if (names.length === 0) return;
+    try {
+      const res = await guestApiFetch('/api/players');
+      if (!res.ok) return;
+      const known = await res.json();
+      for (const name of names) {
+        if (known.some(k => sameName(k.name, name))) continue;
+        await guestApiFetch('/api/players', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name }),
+        });
+      }
+    } catch (e) {
+      console.warn('Could not save new players to the list:', e);
+    }
+  };
   const prevHole = () => {
     const newHole = Math.max(1, hole - 1);
     setHole(newHole);
@@ -230,7 +283,12 @@ export default function Play() {
               <div className="holenumber">{hole}</div>
             </div>
             <button className="holebtn right" onClick={nextHole} disabled= {hole === lastHole} aria-label="Next hole">Next →</button>
-            <div className="coursename" aria-label="Round name">{game.name}</div>
+            <div className="coursename">
+              <span aria-label="Round name">{game.name} · {lastHole} holes</span>
+              <button className="editgame-btn" onClick={() => setShowEdit(true)}>
+                Players &amp; holes
+              </button>
+            </div>
           </header>
     
           {/* Player cards */}
@@ -251,9 +309,10 @@ export default function Play() {
     
                   <div className="play-controls" aria-label={`Adjust score for ${p}`}>
                     <button className="pill round" onClick={() => bump(p, -1)} aria-label={`Decrease ${p}'s score`}>−</button>
-                    <button className="pill round" onClick={() => resetToZero(p)} aria-label={`Reset ${p}'s score to 0`}>
+                    {/* Display only: tapping this used to wipe the score to 0 */}
+                    <div className="pill round score-value" aria-label={`${p}'s score on this hole`}>
                       {holeScore}
-                    </button>
+                    </div>
                     <button className="pill round" onClick={() => bump(p, +1)} aria-label={`Increase ${p}'s score`}>+</button>
                   </div>
                 </article>
@@ -297,6 +356,10 @@ export default function Play() {
               </button>
             )}
           </div>
+
+          {showEdit && (
+            <EditGameSheet game={game} onSave={saveGameEdit} onClose={() => setShowEdit(false)} />
+          )}
 
           {/* Leaderboard Modal */}
           {showLeaderboard && (

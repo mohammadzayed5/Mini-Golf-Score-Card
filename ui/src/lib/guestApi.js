@@ -1,6 +1,7 @@
 // Enhanced API wrapper that handles guest vs user data automatically
 import { apiFetch, getToken } from './api';
 import { getGuestData, addGuestItem, setGuestData } from './storage';
+import { applyGameEdit } from './gameEdit';
 
 /**
  * Route a request to the API (signed-in) or to local guest storage (guest).
@@ -106,9 +107,11 @@ async function guestFetch(url, options) {
                 id: null
             };
 
-            const currentData = await getGuestData(endpoint);
-            const newData = [...currentData, gameData];
-            await setGuestData(endpoint, newData);
+            // Guest storage holds exactly one game: the current one. Every
+            // guest game has id null and is looked up by that id, so keeping
+            // older ones meant a second game reopened the first game's
+            // players and scores.
+            await setGuestData(endpoint, [gameData]);
             newItem = gameData;
         } else {
             newItem = await addGuestItem(endpoint, requestData);
@@ -121,7 +124,7 @@ async function guestFetch(url, options) {
         };
     }
 
-    // For PATCH requests (score updates)
+    // For PATCH requests (score updates, and edits to the game itself)
     if (options.method === 'PATCH') {
         const pathParts = url.split('/');
         const gameId = pathParts[pathParts.indexOf('games') + 1];
@@ -131,6 +134,28 @@ async function guestFetch(url, options) {
         const gameIndex = gameId === 'null'
             ? games.findIndex(g => g.id === null)
             : games.findIndex(g => g.id == gameId);
+
+        // PATCH /api/games/:id — change players and/or hole count mid-game,
+        // keeping the scores already entered.
+        if (pathParts[pathParts.length - 1] !== 'score') {
+            if (gameIndex < 0) {
+                return {
+                    ok: false,
+                    status: 404,
+                    json: async () => ({ error: 'Not found' })
+                };
+            }
+            games[gameIndex] = applyGameEdit(games[gameIndex], {
+                players: requestData.players,
+                holes: requestData.holes,
+            });
+            await setGuestData('games', games);
+            return {
+                ok: true,
+                status: 200,
+                json: async () => games[gameIndex]
+            };
+        }
 
         if (gameIndex >= 0) {
             const game = games[gameIndex];

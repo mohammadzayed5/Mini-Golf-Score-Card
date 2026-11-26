@@ -261,6 +261,23 @@ def init_db():
             )
         """)
 
+        # Migration: games.finished_at records when wins were awarded, so
+        # opening the results of an old game cannot award them a second time.
+        cursor.execute("SELECT name FROM pragma_table_info('games')")
+        game_columns = {row[0] for row in cursor.fetchall()}
+        if "finished_at" not in game_columns:
+            cursor.execute("ALTER TABLE games ADD COLUMN finished_at TIMESTAMP")
+            # Games that already have every hole scored were played before this
+            # column existed and have had their win counted. Mark them finished
+            # so the next visit to their results page doesn't count it again.
+            cursor.execute("""
+                UPDATE games SET finished_at = created_at
+                WHERE EXISTS (SELECT 1 FROM scores s
+                              WHERE s.game_id = games.id AND s.score IS NOT NULL)
+                  AND NOT EXISTS (SELECT 1 FROM scores s
+                                  WHERE s.game_id = games.id AND s.score IS NULL)
+            """)
+
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_games_user_id ON games(user_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_game_players_game_id ON game_players(game_id)")
         cursor.execute("CREATE INDEX IF NOT EXISTS idx_scores_game_id ON scores(game_id)")

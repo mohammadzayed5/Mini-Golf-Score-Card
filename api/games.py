@@ -3,7 +3,7 @@
 
 
 from flask import Blueprint, request, jsonify
-from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins, delete_game, decrement_player_wins
+from store import create_game, list_games, get_game, update_game, get_player, set_score, update_player_wins, delete_game, decrement_player_wins, mark_game_finished
 from jwt_utils import optional_token
 
 
@@ -211,8 +211,11 @@ def finish_game(current_user, game_id: int):
     # Find all winners (handle ties)
     winners = [t["player"] for t in totals if t["total"] == best_score]
 
-    for winner in winners:
-        update_player_wins(winner, user_id)
+    # Award wins only the first time a game is finished. The results page
+    # calls this on every visit, including visits from History.
+    if mark_game_finished(game_id, user_id):
+        for winner in winners:
+            update_player_wins(winner, user_id)
 
     return jsonify({
         "winners": winners,
@@ -242,7 +245,8 @@ def delete_game_route(current_user, game_id: int):
         total = sum(score for score in scores if isinstance(score, int))
         totals.append({"player": player, "total": total})
 
-    if totals:
+    # Only a finished game has had a win counted, so only then take one back
+    if totals and game.get("finished_at"):
         # Sort by lowest score (mini golf)
         totals.sort(key=lambda x: x["total"])
         best_score = totals[0]["total"]
